@@ -1,0 +1,1161 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Panic Blaster</title>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+        rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"></script>
+    <style type="text/css">
+        html
+        {
+            width: 100%;
+            height: 100%;
+        }
+        
+        body
+        {
+            font-family: Verdana;
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+            color: #9D8F7E;
+            overflow: hidden;
+        }
+        
+        
+        canvas
+        {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            min-height: 100%;
+            background-color: Black;
+        }
+        
+        #canvasContainer
+        {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            display: table-cell;
+            min-height: 100%;
+        }
+        
+        #content
+        {
+            display: table;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #sidebar
+        {
+            display: table-cell;
+            text-align: left;
+            vertical-align: top;
+            width: 300px;
+            left: 0px;
+            top: 0px;
+            margin-top: 0px;
+        }
+        
+        .transparent { background:transparent; border-width: 0px; }
+        .ui-dialog-titlebar { display:none; }
+        
+        .dialogcommon
+        {
+            color: #9D8F7E;
+            font-family: Verdana;            
+        }
+        
+        #dataDisplay 
+        {            
+            border-width: 0px;            
+        }
+
+        #displayTitle 
+        {
+            border-width: 0px;
+            font-size: 32pt;
+        }
+        
+        .varHeading 
+        {
+            float: left;
+            width: 100px;
+        }
+        
+        .varValue
+        {
+            width: 200px;            
+        }
+                
+    </style>
+</head>
+<body>
+    <div id="content">        
+
+        <div id="canvasContainer">
+            <canvas id="gamecanvas">You must use a browser that supports Canvas. Try Chrome, IE9+, or FireFox 4.0.</canvas>
+        </div>
+    </div>
+
+    <div id="bosshide">
+            <div class="realpost"><div>
+
+        <h2><a href="http://blog.mutantbunny.com/post/1722502309/javascript-inheritance-examples">JavaScript Inheritance Examples</a></h2>
+
+        <p>JavaScript doesn&#8217;t really support Object Oriented Programming (OOP) natively, but since JavaScript is so flexible you can make it support OOP. The problem with inheritance and JavaScript is that no solution will really make you happy. All have flaws. I&#8217;m going to show you some examples, but try from advocating any particular pattern.</p> 
+<p><em>Side Note: To be a language that support OOP the language must support inheritance, polymorphism, and encapsulation. This post just describes inheritance.</em></p> 
+<p><strong>Prototype Inheritance</strong></p> 
+<p>Prototype inheritance is probably the most commonly recommended way to do inheritance in JavaScript. It works as long as you know what you are doing. It works well on all browsers. The problem with prototype inheritance is that it is ugly. Unless you want to use an external lib to handle the ugliness it sucks.</p> 
+<blockquote> 
+<pre><pre>        <span>function</span> Spaceship() {<br/>        }<br/>        Spaceship.prototype.draw = <span>function</span> (world, engine) {<br/>        }<br/></pre> 
+<pre>        <span>function</span> EnemyShip() {<br/>        }<br/>        EnemyShip.prototype = <span>new</span> Spaceship();<br/>        EnemyShip.prototype.draw = <span>function</span> (world, engine) {        <br/>        }       </pre> 
+</pre> 
+</blockquote> 
+<p><strong>Closure Inheritance</strong></p> 
+<p>Closure inheritance is much cleaner than Prototype, but is supposedly has problems on some browsers. </p> 
+<blockquote> 
+<pre><span>function</span> Patent(x, y, speed, points) {<br/><span>	</span>this.draw = <span>function</span> (world, engine) {<br/><span>	</span>}<br/>}</pre> 
+<pre>TargetedPatent.prototype = <span>new</span> Patent();<br/><span>function</span> TargetedPatent(x, y, speed, points) {<br/><span><span>	</span>this</span><span>.draw = </span><span>function</span><span> (world, engine) {<br/></span><span><span>	</span>}</span> <br/>}</pre> 
+</blockquote> 
+<p><a href="http://ajaxpatterns.org/Javascript_Inheritance">Reference</a></p>
+
+      </div></div>
+
+    </div>
+    
+    <div style="visibility: hidden">
+
+        // create image for spaceship
+        <img id="spaceshipflying1" src="panic_ship_flying_1.png" width="40" height="40" style="visibility:hidden" />
+
+        <img id="spaceshipflying2" src="panic_ship_flying_2.png" width="40" height="40" style="visibility:hidden" />
+
+        <img id="spaceshipflyingstill" src="panic_ship.png" width="40" height="40" style="visibility:hidden" />
+
+        <img id="spaceshipboosting1" src="panic_ship_boosting_1.png" width="40" height="40" style="visibility:hidden" />
+
+        <img id="spaceshipboosting2" src="panic_ship_boosting_2.png" width="40" height="40" style="visibility:hidden" />
+
+        <img id="gunupgradeimg" src="gun_upgrade3.png" width="40" height="40" style="visibility:hidden" />
+
+        <img id="shieldupgradeimg" src="shield_upgrade.png" width="40" height="40" style="visibility:hidden" />
+
+        <img id="patentimg" src="panic_panic.png" width="40"
+            height="40" style="visibility: hidden" />
+
+        <img id="patenttargetedimg" src="panic_targeted.png" width="40"
+            height="40" style="visibility: hidden" />
+
+        <img id="patentwiggleimg" src="panic_wiggle.png" width="40"
+            height="40" style="visibility: hidden" />
+
+        <img id="patentwiggletmpimg" src="panic_wiggle_tmp.png" width="40"
+            height="40" style="visibility: hidden" />
+
+        <img id="patentbattleshipimg" src="panic_battleship.png" width="40"
+            height="40" style="visibility: hidden" />
+
+        <img id="patentbattleshiptmpimg" src="panic_battleship_tmp.png" width="40"
+            height="40" style="visibility: hidden" />           
+        
+        <img id="spacestationimg" src="spacestation.png"
+            width="40" height="40" style="visibility: hidden" />
+
+        <img id="tran1" src="half2.png" width="40"
+            height="40" style="visibility: hidden" />           
+
+        <img id="keysimg" src="Keys.png"
+            width="40" height="40" style="visibility: hidden" />
+
+        <div id="welcome" class="dialogcommon">
+            <div style="text-align: center">
+                <div>Don't Panic</div>
+                <div>Press enter to continue</div>
+            </div>
+        </div>
+        <div id="gamelose" title="You Lose - DOUG DURHAM!!!" class="dialogcommon">
+            <div style="text-align: center">
+                <div id="gameloseText">You Lose - DOUG DURHAM!!!</div>            
+                <div>Press enter to try again</div>            
+            </div>
+        </div>
+        <div id="gamewin" title="You win" class="dialogcommon">
+            <div style="text-align: center">
+                <div>You have completed level <span id="levelNum">0</span></div>
+                <div>Press enter to continue</div>
+            </div>
+        </div>  
+
+        <div id="pause" class="dialogcommon">
+            <div style="text-align: center">
+                <div>Game Paused</div>
+                <div>Press 'p' to Continue</div>
+            </div>
+        </div>
+        
+        <div id="displayTitle" class="dialogcommon">
+            PanicBlaster
+        </div>
+              
+        <div id="dataDisplay" class="dialogcommon">
+            <div>                
+                
+                <div>                
+                <span class="varHeading">Progress</span>
+                <span id="progressDiv" > 
+                    <img id="progressImg" src="progress.png" width="0px" height="10px" />                   
+                </span>
+                </div>                
+                 
+                <div>                
+                <span class="varHeading">Energy</span>
+                <span id="energyDiv" class="varValue">
+                    <img id="energyImg" src="progress.png" width="100px" height="10px" />                   
+                </span>
+                </div>                
+
+                <div>                
+                <span class="varHeading">Level</span>
+                <span id="levelDiv" class="varValue">0</span>
+                </div>
+
+                <div id="percentDiv">                
+                <span class="varHeading">Percent</span>
+                <span id="percentValue" class="varValue">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="arrows" class="dialogcommon" style="text-align: center; vertical-align: bottom">
+            <div style="text-align: center">
+                <span id="up">UP</span>
+            </div>
+            <div style="text-align: center">
+                <span id="left">LEFT</span>&nbsp;&nbsp;&nbsp;<span id="right">RIGHT</span>
+            </div>
+            <div style="text-align: center">
+                <span id="space">SPACE (shoot)</span>
+            </div>
+            <div style="text-align: center">
+                <span id="cntrl">CNTRL (boost)</span>
+            </div>
+        </div>
+
+    </div>
+    <script type="text/javascript" src="Gamev80.js"></script>
+    <script type="text/javascript">
+
+        // setup dialogs
+        $("#displayTitle").dialog({ dialogClass: 'transparent', resizable: false, position: ['left', 'top'], width: 500 });
+        $("#dataDisplay").dialog({ dialogClass: 'transparent', resizable: false, position: ['right', 'top']});
+        $("#gamelose").dialog({ autoOpen: false, width: 500, dialogClass: 'transparent', resizable: false });
+        $("#gamewin").dialog({ autoOpen: false, width: 500, dialogClass: 'transparent', resizable: false });
+        $("#bosshide").hide();
+        $("#welcome").dialog({ autoOpen: true, width: 500, dialogClass: 'transparent', resizable: false });
+        $("#percentDiv").hide();
+        $("#arrows").dialog({ dialogClass: 'transparent', resizable: false, position: ['right', 'bottom'] });
+        $("#pause").dialog({ autoOpen: false, dialogClass: 'transparent', resizable: false });
+
+        // init
+        game = null;
+        difficulty = 1;
+        score = 0;
+        level = 1;
+        won = false;
+        startPatentCount = 100;
+        currentPatentCount = startPatentCount;        
+
+        // configure the canvas
+        c = document.getElementById('gamecanvas');
+        var windowWidth = c.clientWidth;
+        var windowHeight = c.clientHeight;                        
+
+        // calculate progress
+        function progress() {
+            return ((startPatentCount - currentPatentCount) / startPatentCount) * 100;
+        }
+
+        function loseGame(deathType) {
+
+            if (deathType == undefined || deathType == 0) {
+                $("#gameloseText").html("You got hit!");
+            }
+            else {
+                $("#gameloseText").html("You ran out of fuel!");
+            }
+
+            game.stop();
+            $("#gameloseDiff").html(difficultyText());
+            $("#gamelose").dialog('open');            
+        }
+
+        function winLevel() {
+            won = true;
+            game.stop();
+            $("#gamewin").dialog('open');
+            $("#levelNum").html(level);
+            SetMaxLevel();
+        }
+
+        function StatusUpdater() {
+            this.draw = function (world, engine) {
+                $("#scoreDiv").html(score);
+                $("#progressImg").width(progress());
+                $("#energyImg").width(parseInt(energy));
+                $("#levelDiv").html(level);
+
+                if (energy <= 0)
+                    loseGame(1);
+
+                if (game.keyMaster != undefined) {
+                    if (game.keyMaster.leftPressed) {
+                        $("#left").css("color", "red");
+                    }
+                    else {
+                        $("#left").css("color", "#9D8F7E");
+                    }
+
+                    if (game.keyMaster.upPressed) {
+                        $("#up").css("color", "red");
+                    }
+                    else {
+                        $("#up").css("color", "#9D8F7E");
+                    }
+
+                    if (game.keyMaster.rightPressed) {
+                        $("#right").css("color", "red");
+                    }
+                    else {
+                        $("#right").css("color", "#9D8F7E");
+                    }
+
+                    if (game.keyMaster.boostPressed) {
+                        $("#cntrl").css("color", "red");
+                    }
+                    else {
+                        $("#cntrl").css("color", "#9D8F7E");
+                    }
+
+                    if (game.keyMaster.firePressed) {
+                        $("#space").css("color", "red");
+                    }
+                    else {
+                        $("#space").css("color", "#9D8F7E");
+                    }
+                }
+            }
+        };
+
+        // ipad / iphone testing
+        alpha = 0;
+        beta = 0;
+        gamma = 0;
+
+        if (window.DeviceMotionEvent != undefined) {
+            window.ondeviceorientation = function (event) {
+                alpha = Math.round(event.alpha);
+                beta = Math.round(event.beta);
+                gamma = Math.round(event.gamma);
+            }
+        }
+                
+        // space stations are used to recharge your energy
+        function GunUpgrade(x, y) {
+            this.point = new Point(x, y);
+
+            // draw object
+            this.draw = function (world, engine) {
+
+                transformed = world.transformPoint(this.point);
+
+                var st = document.getElementById('gunupgradeimg');
+                engine.drawImage(st, transformed.x - 25, transformed.y - 25, 50, 50);
+            }
+
+            this.update = function (world, time, timeFromLastFrame, frameMult) {
+
+            }
+
+            this.collisionWithPrimary = function (world) {
+                game.upgradeGun();
+                game.world.removeDynamicObject(this);
+            }
+        };
+
+        // space stations are used to recharge your energy
+        function SpaceStation(x, y) {
+            this.point = new Point(x, y);
+
+            // draw object
+            this.draw = function (world, engine) {
+
+                transformed = world.transformPoint(this.point);
+
+                var st = document.getElementById('spacestationimg');
+                engine.drawImage(st, transformed.x - 25, transformed.y - 25, 50, 50);
+            }
+
+            this.update = function (world, time, timeFromLastFrame, frameMult) {
+
+            }
+
+            this.collisionWithPrimary = function (world) {
+                energy = 100;                
+            }
+        };
+
+        // patent class 
+        function Patent(x, y, speed, points) {
+
+            this.init = function (x, y, speed, points) {
+                this.point = new Point(x, y);
+                this.speed = speed;
+
+                this.show = true;
+                this.basePoints = points;
+
+                this.lastVector = new Point(0, 0);
+            }
+
+            this.getImage = function () {
+                return document.getElementById('patentimg');
+            }
+
+            // draw object
+            this.draw = function (world, engine) {
+
+                if (this.show) {
+
+                    var rotation = 0;
+                    if ((this.lastVector.x > 0.0001 || this.lastVector.x < -0.0001) &&
+                        (this.lastVector.y > 0.0001 || this.lastVector.y < -0.0001)) {
+                        rotation = rotationFromVector(this.lastVector);
+                    }
+
+                    transformed = world.transformPoint(this.point);
+
+                    engine.drawImage(this.getImage(), transformed.x - 25, transformed.y - 25, 50, 50, rotation);
+                }
+            }
+
+            // update object
+            this.update = function (world, time, timeFromLastFrame, frameMult) {
+                if (this.show) {
+                    if (Math.abs(world.currentX - this.point.x) < world.canvasWidth &&
+                    Math.abs(world.currentY - this.point.y) < world.canvasHeight) {
+
+                        if (difficulty > 0)
+                            this.lastVector = moveTowardsPrimary(world, this.point, 6 * difficulty * this.speed * frameMult);
+                        else
+                            this.lastVector = moveTowardsPrimary(world, this.point, 2 * frameMult);
+                    }
+                }
+            }
+
+            // hit the main ship, DOUG DURHAM
+            this.collisionWithPrimary = function (world) {
+
+                if (this.show && difficulty > 0) {
+
+                    this.show = false;
+
+                    world.addDynamicObject(new Explosion(world.currentX, world.currentY, "Red"));
+                    loseGame();
+                }
+            }
+
+            // hit by a missile
+            this.collisionWithMissile = function (world) {
+                this.destroyPatent(world);
+            }
+
+            this.explosionColor = function () {
+                return "green";
+            }
+
+            this.destroyPatent = function (world) {
+                this.show = false;
+                world.removeDynamicObject(this);
+
+                currentPatentCount--;
+
+                //energy += 2;
+
+                world.addDynamicObject(new Explosion(this.point.x, this.point.y, this.explosionColor()));
+
+                score += this.basePoints;
+
+                if (currentPatentCount == 0) {
+                    winLevel();                    
+                }
+            }
+
+            this.init(x, y, speed, points);
+        };
+
+
+        // inherit from Patent
+        TargetedPatent.prototype = new Patent();
+
+        function TargetedPatent(x, y, speed, points) {
+
+            this.init(x, y, speed, points);
+            this.mode = 0;
+            this.lastVectorSet = new Date().getTime();
+
+            this.getImage = function () {
+                return document.getElementById('patenttargetedimg');
+            }
+
+            this.update = function (world, time, timeFromLastFrame, frameMult) {
+
+                var t = time.getTime();
+                if (t - this.lastVectorSet > 3000) {
+                    // target
+                    if (difficulty == 0)
+                        this.lastVector = moveTowardsPrimary(world, this.point, 10 * this.speed * frameMult);
+                    else
+                        this.lastVector = moveTowardsPrimary(world, this.point, 10 * difficulty * this.speed * frameMult);
+
+                    this.lastVectorSet = new Date().getTime();
+                }
+
+                // attack
+                this.point.x += this.lastVector.x;
+                this.point.y += this.lastVector.y;
+            }
+
+            this.explosionColor = function () {
+                return "red";
+            }
+
+        }
+
+        WigglePatent.prototype = new Patent();
+
+        function WigglePatent(x, y, speed, points) {
+
+            this.init(x, y, speed, points);
+            this.mode = 1;
+            this.lastVectorSet = new Date().getTime();
+            this.wiggleFinal = new Date().getTime();
+            this.safeTime = new Date().getTime() + 1000;
+
+            this.getImage = function () {
+                if (this.mode == 1)
+                    return document.getElementById('patentwiggleimg');
+                else
+                    return document.getElementById('patentwiggletmpimg');
+            }
+
+            this.update = function (world, time, timeFromLastFrame, frameMult) {
+
+                var t = time.getTime();
+                if (t - this.lastVectorSet > 1000) {
+                    // target
+                    if (difficulty == 0)
+                        this.lastVector = moveTowardsPrimary(world, this.point, 6 * this.speed * frameMult);
+                    else
+                        this.lastVector = moveTowardsPrimary(world, this.point, 6 * difficulty * this.speed * frameMult);
+
+                    this.lastVectorSet = new Date().getTime();
+                }
+
+                if (this.mode == 0 && (t - this.wiggleFinal) > 10000) {
+                    this.mode = 1;
+                }
+
+                // attack
+                this.point.x += this.lastVector.x;
+                this.point.y += this.lastVector.y;
+            }
+
+            // hit by a missile
+            this.collisionWithMissile = function (world) {
+
+                if (this.mode == 1) {
+                    this.mode = 0
+                    this.wiggleFinal = new Date().getTime();
+                    this.safeTime = new Date().getTime() + 200;
+                } else {
+                    var t = new Date().getTime();
+                    if (t - this.safeTime > 0)
+                        this.destroyPatent(world);
+                }
+            }
+
+            this.explosionColor = function () {
+                return "blue";
+            }
+
+        }
+
+        BattleshipPatent.prototype = new Patent();
+
+        function BattleshipPatent(x, y, speed, points) {
+
+            this.init(x, y, speed, points);
+            this.mode = 1;
+            this.lastVectorSet = new Date().getTime();
+            this.wiggleFinal = new Date().getTime();
+            this.safeTime = new Date().getTime() + 1000;
+            this.lastShot = new Date().getTime() + 1000;
+
+            this.getImage = function () {
+                if (this.mode == 1)
+                    return document.getElementById('patentbattleshipimg');
+                else
+                    return document.getElementById('patentbattleshiptmpimg');
+            }
+
+            this.update = function (world, time, timeFromLastFrame, frameMult) {
+
+                var t = time.getTime();
+                if (t - this.lastVectorSet > 1000) {
+                    // target
+                    if (difficulty == 0)
+                        this.lastVector = moveTowardsPrimary(world, this.point, 2 * this.speed * frameMult);
+                    else
+                        this.lastVector = moveTowardsPrimary(world, this.point, 2 * difficulty * this.speed * frameMult);
+
+                    this.lastVectorSet = new Date().getTime();
+                }
+
+                if (this.mode == 0 && (t - this.wiggleFinal) > 10000) {
+                    this.mode = 1;
+                }
+
+                // attack
+                this.point.x += this.lastVector.x;
+                this.point.y += this.lastVector.y;
+
+                this.shoot(world, time, timeFromLastFrame, frameMult);
+            }
+
+            // determine if we should shoot at primary starship
+            this.shoot = function (world, time, timeFromLastFrame, frameMult) {
+
+                var t = time.getTime();
+                if (t - this.lastShot > 0) {
+
+                    if (Math.abs(Math.abs(this.point.x) - Math.abs(world.currentX)) < 500 &&
+                        Math.abs(Math.abs(this.point.y) - Math.abs(world.currentY)) < 500) {
+
+                        var rotation = rotationFromVector(this.lastVector);
+                        var m = new Missle(this.point.x, this.point.y, rotation);
+                        m.firer(this);
+                        world.addDynamicObject(m);
+
+                        this.lastShot = new Date().getTime() + 1000;
+                    }
+                    else {
+                        this.lastShot = new Date().getTime() + 250;
+                    }
+                }
+            }
+            // hit by a missile
+            this.collisionWithMissile = function (world) {
+
+                if (this.mode == 1) {
+                    this.mode = 0
+                    this.wiggleFinal = new Date().getTime();
+                    this.safeTime = new Date().getTime() + 200;
+                } else {
+                    var t = new Date().getTime();
+                    if (t - this.safeTime > 0)
+                        this.destroyPatent(world);
+                }
+            }
+
+            this.explosionColor = function () {
+                return "pink";
+            }
+
+            this.shotHitPrimary = function (world) {
+                loseGame();
+            }
+        }
+
+        // super patent
+        SuperPatent.prototype = new Patent();
+
+        function SuperPatent(x, y, speed, points) {
+
+            this.init(x, y, speed, points);
+            this.mode = 1; // used to determine which image to display.
+            this.lastVectorSet = new Date().getTime();
+            this.wiggleFinal = new Date().getTime(); 
+            this.safeTime = new Date().getTime() + 1000;
+            this.lastShot = new Date().getTime() + 1000;
+
+            this.getImage = function () {
+                if (this.mode == 1)
+                    return document.getElementById('patentbattleshipimg');
+                else
+                    return document.getElementById('patentbattleshiptmpimg');
+            }
+
+            this.update = function (world, time, timeFromLastFrame, frameMult) {
+
+                var t = time.getTime();
+                if (t - this.lastVectorSet > 3000) {
+                    // target
+                    if (difficulty == 0)
+                        this.lastVector = moveTowardsPrimary(world, this.point, 6 * this.speed * frameMult);
+                    else
+                        this.lastVector = moveTowardsPrimary(world, this.point, 6 * difficulty * this.speed * frameMult);
+
+                    this.lastVectorSet = new Date().getTime();
+                }
+
+                if (this.mode == 0 && (t - this.wiggleFinal) > 10000) {
+                    this.mode = 1;
+                }
+
+                // attack
+                this.point.x += this.lastVector.x;
+                this.point.y += this.lastVector.y;
+
+                this.shoot(world, time, timeFromLastFrame, frameMult);
+            }
+
+            // determine if we should shoot at primary starship
+            this.shoot = function (world, time, timeFromLastFrame, frameMult) {
+
+                var t = time.getTime();
+                if (t - this.lastShot > 0) {
+
+                    if (Math.abs(Math.abs(this.point.x) - Math.abs(world.currentX)) < 500 &&
+                        Math.abs(Math.abs(this.point.y) - Math.abs(world.currentY)) < 500) {
+
+                        var rotation = rotationFromVector(this.lastVector);
+                        var m = new Missle(this.point.x, this.point.y, rotation);
+                        m.firer(this);
+                        world.addDynamicObject(m);
+
+                        this.lastShot = new Date().getTime() + 1000;
+                    }
+                    else {
+                        this.lastShot = new Date().getTime() + 250;
+                    }
+                }
+            }
+
+            // hit by a missile
+            this.collisionWithMissile = function (world) {
+
+                if (this.mode == 1) {
+                    this.mode = 0
+                    this.wiggleFinal = new Date().getTime();
+                    this.safeTime = new Date().getTime() + 200;
+                } else {
+                    var t = new Date().getTime();
+                    if (t - this.safeTime > 0)
+                        this.destroyPatent(world);
+                }
+            }
+
+            this.shotHitPrimary = function (world) {
+                loseGame();
+            }
+        }    
+
+        // setup canvas
+        $(document).ready(function () {
+
+            c = document.getElementById('gamecanvas');
+
+            c.width = windowWidth;
+            c.height = windowHeight;
+            //c.width = c.clientWidth / 2;
+            //c.height = c.clientHeight / 2;
+
+            if ($.browser.msie) {
+                var fullheight = document.body.clientHeight;
+                $("#gamecanvas").height(fullheight);
+                //c.height = fullheight;
+            }
+
+            CreateGame();
+
+        });
+
+        function GetLevel() {
+            
+            GetLevelFromUrl();
+
+            if (level < 1) {
+                // try local storage
+                level = parseInt(localStorage.getItem("level"));
+                if (level == null || level == undefined)
+                    level = 1;
+            }
+
+            if (isNaN(level))
+                level = 1;
+        }
+
+        function SetMaxLevel() {
+            var currentMaxLevel = GetLevel();
+            var sl = level + 1;
+            if (currentMaxLevel < level) {
+                sl = currentMaxLevel;
+            }
+            localStorage.setItem("level", parseInt(sl));
+        }
+
+        function GetLevelFromUrl() {
+            level = 1;
+
+            var url = location.href;
+            var loc = url.indexOf("#");
+            if (loc > 0) {
+                var splits = url.split('#');
+                if (splits.length > 1) {
+                    level = parseInt(splits[1]);
+                }
+            }
+
+            if (level < 0)
+                level = 1;
+        }
+
+        function CreateGame() {
+
+            GetLevel();
+
+            energy = 100.0;
+
+            game = new SpaceGame("gamecanvas", windowWidth, windowHeight);
+
+            game.world.addMenuObject(new StatusUpdater());
+
+            InitGame();            
+
+            var ctx = c.getContext('2d');
+            ctx.restore();
+            ctx.fillRect(0, 0, windowWidth, windowHeight);
+
+            game.world.missileFired = function (world) {
+                energy = energy - 0.15;
+            };
+
+            game.world.usingRockets = function (world) {
+                energy = energy - 0.05;
+            };
+
+            game.world.usingBoosters = function (world) {
+                energy = energy - 1.5;
+            };
+        };
+
+        $("#startbtn").click(function () {
+            $("#welcome").dialog('close');
+            ResetGame();
+        });
+
+        $("#nextLevel").click(function () {            
+            ResetGame();
+        });
+
+        // restart game by pressing return
+        $('body').keyup(function (key) {
+            if (key.keyCode == '13' && game && !game.running) {
+                // restart game if they press enter.
+                ResetGame();
+            }
+            if (key.keyCode == "82") {
+                winLevel();
+            }
+            if (key.keyCode == '80') {
+                pause();
+            }
+            if (key.keyCode == '66') {
+                bossHide();
+            }
+        });
+
+        $('body').click(function () {
+            if (!game.running)
+                ResetGame();
+        });
+
+        // pause the game, or unpause if already paused.
+        function pause() {
+            if (game.paused) {
+                game.unpause();
+                $("#bosshide").hide();
+                $("#content").show();
+
+                $("#pause").dialog("close");
+
+                $("#displayTitle").dialog("open");
+                $("#dataDisplay").dialog("open");
+                $("#arrows").dialog("open");
+
+            }
+            else {
+                game.pause();
+
+                $("#pause").dialog("open");
+            }
+        }
+
+        function bossHide() {
+            pause();
+            if (game.paused) {
+                $("#content").fadeOut(100, function () {
+                    $("#displayTitle").dialog("close");
+                    $("#dataDisplay").dialog("close");
+                    $("#arrows").dialog("close");
+                    $("#pause").dialog("close");
+                    $("#bosshide").fadeIn(100);
+                });
+            }
+            else {
+                $("#bosshide").fadeOut(100, function () {
+                    $("#content").fadeIn(100);
+                    $("#bosshide").fadeIn(100);
+                });
+            }            
+        }
+
+        // restart game by clicking restart button
+        $("#restartbutton").click(function () {
+            ResetGame();
+        });
+
+        function ResetGame() {
+
+            if (won) {
+                won = false;
+                level++;
+                location.href = "#" + level;
+            }
+
+            energy = 100;
+            score = 0;
+                
+            game.reset();
+            InitGame();
+
+            $("#gamelose").dialog('close');
+            $("#gamewin").dialog('close');
+            $("#welcome").dialog('close');
+            
+            StartGame();
+        };
+
+        function InitGame() {
+
+            $("#totalpatents").html(startPatentCount);
+            $("#patentsdestroyed").html(currentPatentCount);                        
+            
+            var levelMode = level % 10;            
+
+            difficulty = 1;
+
+            var superCount = 0;
+
+            if ((level / 10) > 1) {
+                // changes speed
+                difficulty = (level / 10) * 1.1; 
+
+                // adjust number of super panics
+                superCount = parseInt((level / 10).toString()) * 10;
+            }
+
+            if (difficulty > 3.5)
+                difficulty = 3.5;
+
+            startPatentCount = 100 + superCount;
+            var patentCount = startPatentCount;
+            currentPatentCount = startPatentCount;
+
+            var normal = 90;
+            var targeted = 5;
+            var wiggle = 5;
+            var battleship = 0;
+
+            switch (levelMode) {
+                case 2:
+                    targeted = 5;
+                    wiggle = 15;
+                    battleship = 5;
+                    break;
+                case 3:
+                    targeted = 5;
+                    wiggle = 15;
+                    battleship = 5;
+                    break;
+                case 4:
+                    targeted = 10;
+                    wiggle = 15;
+                    battleship = 5;
+                    break;
+                case 5:
+                    targeted = 10;
+                    wiggle = 20;
+                    battleship = 5;
+                    break;
+                case 6:
+                    targeted = 15;
+                    wiggle = 30;
+                    battleship = 20;
+                    break;
+                case 7:
+                    targeted = 15;
+                    wiggle = 50;
+                    battleship = 5;
+                    break;
+                case 8:
+                    targeted = 20;
+                    wiggle = 5;
+                    battleship = 50;
+                    break;
+                case 9:
+                    targeted = 25;
+                    wiggle = 25;
+                    battleship = 20;
+                    break;
+                case 0:
+                    targeted = 40;
+                    wiggle = 20;
+                    battleship = 20;
+                    break;
+            }
+
+            var normal = startPatentCount - targeted - wiggle - battleship;
+
+            for (var i = 0; i < patentCount; i++) {
+
+                var point = null;
+                while (true) {
+
+                    point = new Point(Math.random() * game.world.worldWidth, Math.random() * game.world.worldHeight);
+
+                    if (Math.abs(point.x - game.world.currentX) > 400 &&
+                        Math.abs(point.y - game.world.currentY) > 400) {
+                        break;
+                    }
+                }
+                var speedMult = .5;
+                points = 100;
+                if (i < 5) {
+                    speedMult = 1;
+                    points = 150;
+                }
+                else if (i < 10) {
+                    speedMult = 0.25;
+                    points = 50;
+                }
+                    
+                if (superCount > 0) {
+                    game.world.addDynamicObject(new SuperPatent(point.x, point.y, speedMult, points + 500));
+                    superCount--;
+                }
+                if (targeted > 0) {
+                    game.world.addDynamicObject(new TargetedPatent(point.x, point.y, speedMult, points + 150));
+                    targeted--;
+                }
+                else if (wiggle > 0) {
+                    game.world.addDynamicObject(new WigglePatent(point.x, point.y, speedMult, points + 100));
+                    wiggle--;
+                }
+                else if (battleship > 0) {
+                    game.world.addDynamicObject(new BattleshipPatent(point.x, point.y, speedMult, points + 100));
+                    battleship--;
+                }
+                else {
+                    game.world.addDynamicObject(new Patent(point.x, point.y, speedMult, points));
+                    normal--;
+                }
+            }
+
+            // add space stations
+            for (var i = 0; i < 10; i++) {
+
+                var point = null;
+                while (true) {
+
+                    point = new Point(Math.random() * game.world.worldWidth, Math.random() * game.world.worldHeight);
+
+                    if (Math.abs(point.x - game.world.currentX) > 400 &&
+                        Math.abs(point.y - game.world.currentY) > 400) {
+                        break;
+                    }
+                }
+
+                game.world.addDynamicObject(new SpaceStation(point.x, point.y));
+            }
+
+            // add gun upgrades
+            if (level > 10) {
+                for (var i = 0; i < 10; i++) {
+
+                    var point = null;
+                    while (true) {
+
+                        point = new Point(Math.random() * game.world.worldWidth, Math.random() * game.world.worldHeight);
+
+                        if (Math.abs(point.x - game.world.currentX) > 400 &&
+                        Math.abs(point.y - game.world.currentY) > 400) {
+                            break;
+                        }
+                    }
+
+                    game.world.addDynamicObject(new GunUpgrade(point.x, point.y));
+                }
+            }            
+        };
+
+        function StartGame() {
+            
+            var optionText = difficultyText();
+
+            $("#diffdiv").html("Difficulty: " + optionText);            
+            game.start();
+        };
+
+        function difficultyText() {
+
+            var optionText = "Kid";
+
+            switch (difficulty) {
+                case "1":
+                    optionText = "Easy";
+                    break;
+                case "1.2":
+                    optionText = "Medium";
+                    break;
+                case "1.7":
+                    optionText = "Hard";
+                    break;
+            }
+
+            return optionText;
+        }
+
+    </script>
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-1886705-4']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+</body>
+</html>

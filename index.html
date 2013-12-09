@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>PanicBlaster</title>
+
+    <meta name="author" content="Chad Michel" />
+
+    <meta name="viewport"
+    content="user-scalable=no, width=device-width" />
+
+    <link href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"
+        rel="stylesheet" type="text/css" />
+    
+    <script src="http://code.jquery.com/jquery-1.8.1.js"></script>
+
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <style>
+	
+	    html
+        {
+            width: 100%;
+            height: 100%;
+        }
+		
+        body
+        {
+            margin: 0px;
+            font-family: Verdana;
+            color: #9D8F7E;
+            overflow: hidden;
+			height: 100%;
+			width: 100%;            
+        }
+        
+        canvas
+        {
+            width: 100%;
+            height: 100%;
+            background-color: Black;
+        }
+        
+        #displayTitle
+        {
+            border-width: 0px;
+            font-size: 32pt;
+        }
+        
+        #dataDisplay
+        {
+            border-width: 0px;
+        }
+        
+        .transparent
+        {
+            background: transparent;
+            border-width: 0px;
+        }
+        .ui-dialog-titlebar
+        {
+            display: none;
+        }
+        
+        .dialogcommon
+        {
+            color: #9D8F7E;
+            font-family: Verdana;
+        }
+        
+        .varHeading
+        {
+            float: left;
+            width: 100px;
+        }
+        
+        .varValue
+        {
+            width: 200px;
+        }
+
+        #boostbtn
+        {
+            float: left;
+            text-align: center;
+            background-color: blue;
+            width: 100px;
+        }
+        
+
+        #firebtn
+        {
+            float: right;
+            text-align: center;
+            background-color: red;
+            width: 100px;
+        }
+
+    </style>
+</head>
+<body ontouchmove="BlockMove(event);">
+
+    <canvas id="canvas">
+    </canvas>
+    <div style="visibility: hidden">
+        // create image for spaceship
+        <img id="spaceshipflying1" src="panic_ship_flying_1.png" width="40" height="40" />
+        <img id="spaceshipflying2" src="panic_ship_flying_2.png" width="40" height="40" />
+        <img id="spaceshipflyingstill" src="panic_ship.png" width="40" height="40" />
+        <img id="spaceshipboosting1" src="panic_ship_boosting_1.png" width="40" height="40"
+             />
+        <img id="spaceshipboosting2" src="panic_ship_boosting_2.png" width="40" height="40"
+             />
+        <img id="gunupgradeimg" src="gun_upgrade3.png" width="40" height="40" />
+        <img id="shieldupgradeimg" src="shield_upgrade.png" width="40" height="40" />
+        <img id="panicimg" src="panic_panic.png" width="40" height="40" />
+        <img id="panictargetedimg" src="panic_targeted.png" width="40" height="40"  />
+        <img id="panicwiggleimg" src="panic_wiggle.png" width="40" height="40"  />
+        <img id="panicwiggletmpimg" src="panic_wiggle_tmp.png" width="40" height="40"  />
+        <img id="panicbattleshipimg" src="panic_battleship.png" width="40" height="40"  />
+        <img id="panicbattleshiptmpimg" src="panic_battleship_tmp.png" width="40" height="40" />
+
+        <img id="robotimg" src="robot.png" width="40" height="40"  />
+        <img id="robottmpimg" src="robot.png" width="40" height="40"  />
+        
+        <img id="super1" src="Heads/chad.gif" />
+        <img id="super2" src="Heads/steve.gif" />
+        <img id="super3" src="Heads/patrick.gif" />
+        <img id="super4" src="Heads/nick.gif" />
+
+        <img id="super5" src="Heads/adam.gif" />
+        <img id="super6" src="Heads/amanda.gif" />
+        <img id="super7" src="Heads/avery.gif" />
+        <img id="super8" src="Heads/ben.gif" />
+        <img id="super9" src="Heads/briang.gif" />
+        <img id="super10" src="Heads/nick.gif" />
+        <img id="super11" src="Heads/brians.gif" />
+        <img id="super12" src="Heads/brianz.gif" />
+        <img id="super13" src="Heads/cody.gif" />
+        <img id="super14" src="Heads/doug.gif" />
+        <img id="super15" src="Heads/emily.gif" />
+        <img id="super16" src="Heads/hari.gif" />
+        <img id="super17" src="Heads/jennifer.gif" />
+        <img id="super18" src="Heads/john.gif" />
+        <img id="super19" src="Heads/justin.gif" />
+        <img id="super20" src="Heads/matt.gif" />
+        <img id="super21" src="Heads/burda.gif" />
+        <img id="super22" src="Heads/nate.gif" />
+        <img id="super23" src="Heads/nicks.gif" />
+        <img id="super24" src="Heads/paulb.gif" />
+        <img id="super25" src="Heads/paulh.gif" />
+        <img id="super26" src="Heads/nate.gif" />
+        <img id="super27" src="Heads/rich.gif" />
+        <img id="super28" src="Heads/russ.gif" />
+        <img id="super29" src="Heads/ted.gif" />
+        <img id="super30" src="Heads/tim.gif" />
+        <img id="super31" src="Heads/todd.gif" />
+
+        <img id="spacestationimg" src="spacestation.png" width="40" height="40"  />
+    </div>
+    <div>
+        <div id="displayTitle" class="dialogcommon">
+            PanicBlaster
+        </div>
+        <div id="dataDisplay" class="dialogcommon">
+            <div>
+                <div id="progressDivContainer">
+                    <span class="varHeading">Progress</span> <span id="progressDiv">
+                        <img id="progressImg" src="progress.png" width="0px" height="10px" />
+                    </span>
+                </div>
+                <div>
+                    <span class="varHeading">Energy</span> <span id="energyDiv" class="varValue">
+                        <img id="energyImg" src="progress.png" width="100px" height="10px" />
+                    </span>
+                </div>
+                <div>
+                    <span class="varHeading">Level</span> <span id="levelDiv" class="varValue">0</span>
+                </div>
+                <div id="countdownDiv">
+                    <span class="varHeading">Time</span> <span id="countdownVal" class="varValue">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="debugdialog" class="dialogcommon">
+            <div>DEBUG</div>
+            <div>
+
+                <div id="ipadonly">
+                    <div id="axDiv">
+                        <span class="varHeading">AX</span> <span id="ax" class="varValue">0</span>
+                    </div>
+                    <div id="ayDiv">
+                        <span class="varHeading">AY</span> <span id="ay" class="varValue">0</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div>
+                        <span class="varHeading">SW</span> <span id="sw" class="varValue">0</span>
+                    </div>
+                    <div>
+                        <span class="varHeading">SH</span> <span id="sh" class="varValue">0</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="boostdialog" class="dialogcommon">
+            <div id="boostdiv">
+            <div id="boostbtn">BOOST</div>
+            </div>
+        </div>
+
+        <div id="firedialog" class="dialogcommon">
+            <div id="firediv">
+            <div id="firebtn">FIRE</div>
+            </div>
+        </div>
+
+        <div id="gamelose" title="You Lose - DOUG DURHAM!!!" class="dialogcommon">
+            <div style="text-align: center">
+                <div id="gameloseText">
+                    You Lose - DOUG DURHAM!!!</div>
+                <div>
+                    Press enter to try again</div>
+            </div>
+        </div>
+
+        <div id="gamewin" title="You win" class="dialogcommon">
+            <div style="text-align: center">
+                <div>You have completed level <span id="levelNum">0</span></div>
+                <div>Press enter to continue</div>
+            </div>
+        </div>  
+
+        <div id="nocanvas" class="dialogcommon">
+              Your browser doesn't support the HTML 5 canvas element that this game requires.
+              Please try IE9, Chrome, Safari or Firefox.
+        </div>
+
+        <div id="welcome" class="dialogcommon">
+            <div style="text-align: center; alignment: center">
+                <div>
+                    Don't Panic</div>
+                <div>
+                    Press enter to continue</div>
+            </div>
+
+            <br />
+            <div style="margin-left: 125px">
+                <div>
+                <div><span class="varHeading">Move:</span> <span class="varValue">Arrow Keys</span></div>
+                <div><span class="varHeading">Fire:</span> <span class="varValue">Spacebar</span></div>
+                <div><span class="varHeading">Boost:</span> <span class="varValue">Ctrl</span></div>
+                </div>    
+            </div>
+
+        </div>
+        <div id="pause" class="dialogcommon">
+            <div style="text-align: center">
+                <div>
+                    Game Paused</div>
+                <div>
+                    Press 'p' to Continue</div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        $.browser={ msie: ( navigator.appName == 'Microsoft Internet Explorer') ? true : false } 
+
+        // http://matt.might.net/articles/how-to-native-iphone-ipad-apps-in-javascript/
+        function BlockMove(event) {
+            // Tell Safari not to move the window.
+            event.preventDefault() ;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // UTILITY 
+        ///////////////////////////////////////////////////////////////////////////
+
+        function log(message) {            
+          if (this.console && typeof console.log != "undefined")
+            console.log(message);
+        }
+
+        // Are these points at all close?
+        // Used to determine if better checking is needed.
+        function isClose(p1, p2) {
+
+            if (p1 != null && p2 != null) {
+                if (Math.abs(p1.x - p2.x) < 250 &&
+                    Math.abs(p1.y - p2.y) < 250) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Is p1 withing the radius defined by the point (pointRadius) and the radius.
+        // Uses lots of math, should try to avoid.
+        function isWithinRadius(p1, pointRadius, radius) {
+            var xDiff = Math.abs(p1.x - pointRadius.x);
+            var yDiff = Math.abs(p1.y - pointRadius.y);
+
+            var dist = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+
+            if (dist < radius)
+                return true;
+            return false;
+        }
+
+        // Determine rotaiont from vector
+        function rotationFromVector(vector) {
+
+            var t = 0;
+            if (vector.x > 0)
+                t = Math.atan(vector.y / vector.x) * 180 / Math.PI + 90;
+            else if (vector.x < 0)
+                t = Math.atan(vector.y / vector.x) * 180 / Math.PI + 270;
+
+            return t;
+        }
+
+        function moveTowardsPrimary(game, point, speed) {
+
+            var xMove = 0;
+            var yMove = 0;
+
+            var xDiff = Math.abs(game.currentPosition.x - point.x);
+            var yDiff = Math.abs(game.currentPosition.y - point.y);
+            var total = xDiff + yDiff;
+
+            if (total > 0) {
+
+                // move towards ship
+                if (game.currentPosition.x < point.x)
+                    xMove = -speed * (xDiff / total);
+                if (game.currentPosition.x > point.x)
+                    xMove = speed * (xDiff / total);
+
+                if (game.currentPosition.y < point.y)
+                    yMove = -speed * (yDiff / total);
+                if (game.currentPosition.y > point.y)
+                    yMove = speed * (yDiff / total);
+
+                point.x += xMove;
+                point.y += yMove;
+            }
+            return new Point(xMove, yMove);
+        }
+
+        // calculate distance between points
+        function calculateDistance(p1, p2) {
+            var xDiff = Math.abs(p1.x - p2.x);
+            var yDiff = Math.abs(p1.y - p2.y);
+
+            var dist = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+            return dist;
+        }
+
+        // get vector from two points
+        function getVector(start, end, divider) {
+            if (divider <= 0) {
+                divider = 1;
+            }
+
+            var xd = Math.abs(end.x - start.x);
+            var yd = Math.abs(end.y - start.y);
+
+            var vector = new Point((end.x - start.x) / divider,
+                           (end.y - start.y) / divider);
+
+            return vector;
+        }
+
+        // http://diveintohtml5.org/detect.htm
+        function supports_canvas() {
+          return !!document.createElement('canvas').getContext;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // GAME OBJECTS - Always accessed thru ObjectStore
+        ///////////////////////////////////////////////////////////////////////////
+
+        // single point in the world
+        function Point(x, y) {
+            this.x = x;
+            this.y = y;
+        };
+
+        // background stars
+        function Star(x, y) {
+            this.point = new Point(x, y);
+
+            this.draw = function (game) {
+
+                if (game.windowTopLeft.x > this.point.x) {
+                    this.point.x = game.windowBottomRight.x - (game.windowTopLeft.x - this.point.x);
+                }
+                if (game.windowTopLeft.y > this.point.y) {
+                    this.point.y = game.windowBottomRight.y - (game.windowTopLeft.y - this.point.y);
+                }
+                if (game.windowBottomRight.x < this.point.x) {
+                    this.point.x = game.windowTopLeft.x + (this.point.x - game.windowBottomRight.x);
+                }
+                if (game.windowBottomRight.y < this.point.y) {
+                    this.point.y = game.windowTopLeft.y + (this.point.y - game.windowBottomRight.y);
+                }
+
+                var color = "white";
+                var size = 2;
+
+                if (this.point.x < 0 || this.point.y < 0 ||
+                        this.point.x > game.gameMaxWidth || this.point.y > game.gameMaxHeight) {
+                    color = "gray"
+                    size = 2;
+                }
+
+                game.canvasAccessor.drawRect(this.point.x, this.point.y, size, size, color);
+            }
+        };
+
+        function Missile(x, y, rotation) {
+            this.point = new Point(x, y);
+            this.lastPosition = new Point(x, y);
+            this.rotation = rotation;
+            this.exploded = false;
+
+            var currentTime = new Date();
+            this.startTime = currentTime.getTime();
+
+            this.startVectorX = 0.0;
+            this.startVectorY = 0.0;
+
+            this.init = false;
+
+            this.speedMult = 20;
+            this.hitPrimary = false;
+            this.shooter = null;
+
+            // used to set the shooter of the missile.
+            // When calling this it is a missile being fired from a game object, not the primary ship.
+            this.firer = function (shooter) {
+                this.shooter = shooter;
+                this.hitPrimary = true;
+                this.speedMult = 5;
+
+            }
+
+            this.draw = function (game) {
+                var color = "#C2CD23";
+                if (this.hitPrimary)
+                    color = "red";
+
+                game.canvasAccessor.drawRect(this.point.x, this.point.y, 6, 6, color);
+            }
+
+            this.update = function (game) {
+
+                this.lastPosition = new Point(this.point.x, this.point.y);
+
+                if (!this.init) {
+
+                    if (!this.hitPrimary) {
+                        // get current velocity of ship
+                        this.startVectorX = game.currentVector.x;
+                        this.startVectorY = game.currentVector.y;
+                    } else {
+                        // get velocity of shooter (panic)
+                        this.startVectorX = this.shooter.lastVector.x;
+                        this.startVectorY = this.shooter.lastVector.y;
+                    }
+                    this.init = true;
+                }
+
+                if (this.exploded) {
+                    game.objectStore.removeDynamicObject(this);
+                } else {
+
+                    radians = Math.PI * this.rotation / 180;
+
+                    xDir = Math.sin(radians);
+                    yDir = Math.cos(radians);
+
+                    var newX = this.point.x + (xDir * this.speedMult + this.startVectorX) * game.frameMult;
+                    var newY = this.point.y - (yDir * this.speedMult - this.startVectorY) * game.frameMult;
+
+                    this.point = new Point(newX, newY);
+
+                    if (game.thisFrameTime - this.startTime > 10000) {
+                        game.objectStore.removeDynamicObject(this);
+                    }
+                }
+            }
+
+            this.checkCollision = true;
+
+            this.collision = function (game, other) {
+                if (!this.hitPrimary) {
+                    if (other.collisionWithMissile) {
+                        other.collisionWithMissile(game);
+                        this.exploded = true;
+                    }
+                }
+            }
+
+            this.collisionWithPrimary = function (game) {
+
+                if (this.hitPrimary) {
+                    this.shooter.shotHitPrimary(game);
+                }
+            }
+        };
+
+        function ExplosionParticle(x, y, color, vectorX, vectorY) {
+            this.point = new Point(x, y);
+            this.vectorX = vectorX;
+            this.vectorY = vectorY;
+            this.color = color;
+
+            this.draw = function (game) {
+                game.canvasAccessor.drawRect(this.point.x, this.point.y, 2, 2, this.color);
+            }
+
+            this.update = function (game) {
+                this.point.x += this.vectorX * game.frameMult;
+                this.point.y += this.vectorY * game.frameMult;
+            }
+        };
+
+        function Explosion(x, y, color) {
+            this.point = new Point(x, y);
+            this.color = color;
+
+            this.particles = new Array();
+            this.startTime = new Date().getTime();
+
+            var degrees = 0;
+            while (degrees < 360) {
+                degrees += 10;
+
+                var radians = Math.PI * degrees / 180;
+
+                var speed = Math.random() * 2;
+
+                var xDir = Math.sin(radians) * speed;
+                var yDir = Math.cos(radians) * speed;
+
+                this.particles.push(new ExplosionParticle(this.point.x, this.point.y, this.color, xDir, yDir));
+            }
+
+            this.draw = function (game) {
+                this.particles.forEach(function (item) {
+                    item.draw(game);
+                });
+            }
+
+            this.update = function (game) {
+                this.particles.forEach(function (item) {
+                    item.update(game);
+                });
+
+                if (game.thisFrameTime - this.startTime > 1000) {
+                    game.objectStore.removeDynamicObject(this);
+                }
+            }
+        };
+
+
+        // space stations are used to recharge your energy
+        function GunUpgrade(x, y) {
+            this.point = new Point(x, y);
+            this.img = 'gunupgradeimg';
+
+            // draw object
+            this.draw = function (game) {
+                game.canvasAccessor.drawImage(this.img, this.point.x, this.point.y, 50, 50, 0);
+            }
+
+            this.update = function (game) {
+
+            }
+
+            this.collisionWithPrimary = function (game) {
+                game.upgradeGun();
+                game.objectStore.removeDynamicObject(this);
+            }
+        };
+
+        // space stations are used to recharge your energy
+        function SpaceStation(x, y) {
+            this.point = new Point(x, y);
+            this.img = 'spacestationimg';
+
+            // draw object
+            this.draw = function (game) {
+                game.canvasAccessor.drawImage(this.img, this.point.x, this.point.y, 50, 50, 0);
+            }
+
+            this.update = function (game) {
+
+            }
+
+            this.collisionWithPrimary = function (game) {
+                game.resetEnergy();
+            }
+        };
+
+        // Base panic
+        function Panic(x, y, speed) {
+
+            this.img = 'panicimg';
+
+            this.init = function (x, y, speed) {
+                this.point = new Point(x, y);
+                this.lastPosition = new Point(this.point.x, this.point.y);
+                this.speed = speed;
+                this.show = true;
+                this.lastVector = new Point(0, 0);
+            }
+
+            // draw object
+            this.draw = function (game) {
+
+                if (this.show) {
+
+                    var rotation = 0;
+                    if ((this.lastVector.x > 0.0001 || this.lastVector.x < -0.0001) &&
+                        (this.lastVector.y > 0.0001 || this.lastVector.y < -0.0001)) {
+                        rotation = rotationFromVector(this.lastVector);
+                    }
+
+                    game.canvasAccessor.drawImage(this.img, this.point.x, this.point.y, 50, 50, rotation);
+                }
+            }
+
+            // update object
+            this.update = function (game) {
+
+                this.lastPosition = new Point(this.point.x, this.point.y);
+
+                if (this.show) {
+                    if (Math.abs(game.currentPosition.x - this.point.x) < game.canvasAccessor.width &&
+                    Math.abs(game.currentPosition.y - this.point.y) < game.canvasAccessor.height) {
+
+                        this.lastVector = moveTowardsPrimary(game, this.point, 8.0 * this.speed * game.frameMult);
+                    }
+                }
+            }
+
+            // hit the primary ship :(
+            this.collisionWithPrimary = function (game) {
+                if (this.show && !game.keyAccessor.invincibleMode) {
+                    this.show = false;
+                    game.hitByPanic();
+                }
+            }
+
+            // hit by a missile
+            this.collisionWithMissile = function (game) {
+                if (!game.keyAccessor.invincibleMode)
+                    this.destroyPanic(game);
+            }
+
+            this.explosionColor = function () {
+                return "green";
+            }
+
+            this.destroyed = false;
+
+            this.destroyPanic = function (game) {
+                if (!this.destroyed && !game.keyAccessor.invincibleMode) {
+                    this.destroyed = true;
+                    this.show = false;
+                    game.destroyPanic(this);
+                }
+            }
+
+            this.init(x, y, speed);
+        };
+
+        // inherit from Panic
+        TargetedPanic.prototype = new Panic();
+
+        function TargetedPanic(x, y, speed) {
+
+            this.img = "panictargetedimg"
+            
+            this.init(x, y, speed);
+            this.mode = 0;
+            this.lastVectorSet = new Date().getTime();
+
+            this.update = function (game) {
+
+                this.lastPosition = new Point(this.point.x, this.point.y);
+
+                var t = game.thisFrameTime;
+                if (t - this.lastVectorSet > 3000) {
+                    // target
+                    this.lastVector = moveTowardsPrimary(game, this.point, 18.0 * this.speed * game.frameMult);
+
+                    this.lastVectorSet = t;
+                }
+
+                // attack
+                this.point.x += this.lastVector.x;
+                this.point.y += this.lastVector.y;
+            }
+
+            this.explosionColor = function () {
+                return "red";
+            }
+        }
+
+        WigglePanic.prototype = new Panic();
+
+        function WigglePanic(x, y, speed) {
+
+            this.img = 'panicwiggleimg';
+
+            this.init(x, y, speed);
+            this.mode = 1;
+            this.lastVectorSet = new Date().getTime();
+            this.wiggleFinal = new Date().getTime();
+            this.safeTime = new Date().getTime() + 1000;
+
+            this.update = function (game) {
+
+                this.lastPosition = new Point(this.point.x, this.point.y);
+                
+                var t = game.lastFrameTime;
+                if (t - this.lastVectorSet > 1000) {
+                    // target
+                    this.lastVector = moveTowardsPrimary(game, this.point, 8.0 * this.speed * game.frameMult);
+
+                    this.lastVectorSet = new Date().getTime();
+                }
+
+                if (this.mode == 0 && (t - this.wiggleFinal) > 10000) {
+                    this.mode = 1;
+                    this.img = 'panicwiggleimg';
+                }
+
+                // attack
+                this.point.x += this.lastVector.x;
+                this.point.y += this.lastVector.y;
+            }
+
+            // hit by a missile
+            this.collisionWithMissile = function (game) {
+
+                if (this.mode == 1) {
+                    this.mode = 0
+                    this.wiggleFinal = new Date().getTime();
+                    this.safeTime = new Date().getTime() + 200;
+                    this.img = 'panicwiggleimg';
+                } else {
+                    this.img = 'panicwiggletmpimg';
+                    var t = new Date().getTime();
+                    if (t - this.safeTime > 0)
+                        this.destroyPanic(game);
+                }
+            }
+
+            this.explosionColor = function () {
+                return "blue";
+            }
+
+        }
+        
+        BattleshipPanic.prototype = new Panic();
+
+        function BattleshipPanic(x, y, speed) {
+
+            this.baseImage = 'panicbattleshipimg';
+            this.hitImage = 'panicbattleshiptmpimg';
+
+            this.img = this.baseImage;
+
+            this.init(x, y, speed);
+            this.mode = 1;
+            this.lastVectorSet = new Date().getTime();
+            this.wiggleFinal = new Date().getTime();
+            this.safeTime = new Date().getTime() + 1000;
+            this.lastShot = new Date().getTime() + 1000;
+            this.vectorResetTime = 1000;
+            this.speedMult = 8.0;
+
+            this.update = function (game) {
+
+                this.lastPosition = new Point(this.point.x, this.point.y);
+
+                var t = game.lastFrameTime;
+                if (t - this.lastVectorSet > this.vectorResetTime) {
+                    // target
+                    this.lastVector = moveTowardsPrimary(game, this.point, this.speedMult * this.speed * game.frameMult);
+
+                    this.lastVectorSet = t;
+                }
+
+                if (this.mode == 0 && (t - this.wiggleFinal) > 10000) {
+                    this.mode = 1;
+                    this.img = this.baseImage;
+                }
+
+                // attack
+                this.point.x += this.lastVector.x;
+                this.point.y += this.lastVector.y;
+
+                this.shoot(game);
+            }
+
+            // determine if we should shoot at primary starship
+            this.shoot = function (game) {
+
+                var t = game.lastFrameTime;
+                if (t - this.lastShot > 0) {
+
+                    if (Math.abs(Math.abs(this.point.x) - Math.abs(game.currentPosition.x)) < 500 &&
+                        Math.abs(Math.abs(this.point.y) - Math.abs(game.currentPosition.y)) < 500) {
+
+                        var rotation = rotationFromVector(this.lastVector);
+                        var m = new Missile(this.point.x, this.point.y, rotation);
+                        m.firer(this);
+                        game.objectStore.addDynamicObject(m);
+
+                        this.lastShot = t + 1000;
+                    }
+                    else {
+                        this.lastShot = t + 250;
+                    }
+                }
+            }
+
+            // hit by a missile
+            this.collisionWithMissile = function (game) {
+
+                if (this.mode == 1) {
+                    this.mode = 0
+                    this.wiggleFinal = new Date().getTime();
+                    this.safeTime = new Date().getTime() + 200;
+                    this.img = this.baseImage;
+                } else {
+                    this.img = this.hitImage;
+                    var t = new Date().getTime();
+                    if (t - this.safeTime > 0)
+                        this.destroyPanic(game);
+                }
+            }
+
+            this.explosionColor = function () {
+                return "pink";
+            }
+
+            this.shotHitPrimary = function (game) {
+                game.hitByPanic();
+            }
+        }
+
+        var lastSuperNumber = 1;
+
+        SuperPanic.prototype = new BattleshipPanic();
+
+        function SuperPanic(x, y, speed) {
+
+            this.employeeImg = "super" + lastSuperNumber;
+
+            lastSuperNumber++;
+            if (lastSuperNumber > 31)
+                lastSuperNumber = 1;
+
+            this.baseImage = this.employeeImg;
+            this.hitImage = this.employeeImg;
+            this.img = this.employeeImg;
+            this.init(x, y, speed);
+            this.vectorResetTime = 3000;
+            this.speedMult = 15.0;
+        }
+
+        function RobotPanic(x, y, speed, maxWidth, maxHeight, inside, shots, direction) {
+
+            this.init = function (x, y, speed) {
+                this.point = new Point(x, y);
+                this.lastPosition = new Point(this.point.x, this.point.y);
+                this.speed = speed;
+                this.show = true;
+                this.lastVector = new Point(0, 0);
+            }
+
+            this.init(x, y, speed);
+            
+            this.img = "robotimg"
+            this.maxWidth = maxWidth;
+            this.maxHeight = maxHeight;
+            this.inside = inside;
+            this.shots = shots;
+            this.health = 30;
+            this.panicsToShoot = new Array();
+            this.direction = direction;
+            this.lastPanicAngle = 0;
+            this.lastShotPanic = new Date().getTime();
+            this.lastShot = 0;
+
+            this.draw = function(game) {                
+                game.canvasAccessor.drawImage(this.img, this.point.x, this.point.y, 50, 50, 0);
+            }
+
+            this.update = function (game) {
+
+                this.lastPosition = new Point(this.point.x, this.point.y);
+
+                if (this.direction == 0) {
+
+                    this.point.x += this.speed;
+
+                    if (this.point.x > (this.maxWidth - this.inside)) {
+                        this.direction = 1;
+                        this.point.x = (this.maxWidth - this.inside);
+                    }
+                }
+                else if (this.direction == 1) {
+
+                    this.point.y += this.speed;
+
+                    if (this.point.y > (this.maxHeight - this.inside)) {
+                        this.direction = 2;
+                        this.point.y = (this.maxHeight - this.inside);
+                    }
+                }
+                else if (this.direction == 2) {
+
+                    this.point.x -= this.speed;
+
+                    if (this.point.x < this.inside) {
+                        this.direction = 3;
+                        this.point.x = this.inside;
+                    }
+                }
+                else if (this.direction == 3) {
+
+                    this.point.y -= this.speed;
+
+                    if (this.point.y < this.inside) {
+                        this.direction = 0;
+                        this.point.y = this.inside;
+                    }
+                }
+
+                if (this.panicsToShoot.length > 0 && (this.lastShotPanic + 1000 < game.thisFrameTime)) {
+
+                    var i = 0;
+                    this.lastShotPanic = game.thisFrameTime;
+
+                    var p = this.panicsToShoot[i];
+                    game.objectStore.dynamicObjects.push(p);
+                    p.point = new Point(this.point.x, this.point.y);
+
+                    if (this.lastPanicAngle == 0) {
+                        p.lastVector.x = 10;
+                        p.lastVector.y = 0;
+                        this.lastPanicAngle = 1;
+                    }
+                    else if (this.lastPanicAngle == 1) {
+                        p.lastVector.x = 0;
+                        p.lastVector.y = 10;
+                        this.lastPanicAngle = 2;
+                    }
+                    else if (this.lastPanicAngle == 2) {
+                        p.lastVector.x = -10;
+                        p.lastVector.y = 0;
+                        this.lastPanicAngle = 3;
+                    }
+                    else {
+                        p.lastVector.x = 0;
+                        p.lastVector.y = -10;
+                        this.lastPanicAngle = 0;
+                    }
+
+                    log("adding panic from robot")
+
+
+                    this.panicsToShoot = new Array();
+                }
+
+                this.shoot(game);
+            }
+
+            // determine if we should shoot at primary starship
+            this.shoot = function (game) {
+
+                var t = game.lastFrameTime;
+                if (t - this.lastShot > 0) {
+
+                    if (Math.abs(Math.abs(this.point.x) - Math.abs(game.currentPosition.x)) < 500 &&
+                        Math.abs(Math.abs(this.point.y) - Math.abs(game.currentPosition.y)) < 500) {
+
+                        var shotVector = moveTowardsPrimary(game, this.point, 10);
+
+                        var rotation = rotationFromVector(shotVector);
+
+                        var m = new Missile(this.point.x, this.point.y, rotation);
+                        m.firer(this);
+                        game.objectStore.addDynamicObject(m);
+
+                        if (this.shots > 1) {
+                            m = new Missile(this.point.x, this.point.y, rotation - 5);
+                            m.firer(this);
+                            game.objectStore.addDynamicObject(m);
+
+                            m = new Missile(this.point.x, this.point.y, rotation + 5);
+                            m.firer(this);
+                            game.objectStore.addDynamicObject(m);
+                        }
+                        if (this.shots >= 5) {
+                            m = new Missile(this.point.x, this.point.y, rotation - 10);
+                            m.firer(this);
+                            game.objectStore.addDynamicObject(m);
+
+                            m = new Missile(this.point.x, this.point.y, rotation + 10);
+                            m.firer(this);
+                            game.objectStore.addDynamicObject(m);
+                        }
+
+                        this.lastShot = t + 1000;
+                    }
+                    else {
+                        this.lastShot = t + 250;
+                    }
+                }
+            }
+
+            // hit by a missile
+            this.collisionWithMissile = function (game) {
+                this.health--;                
+
+                if (this.health <= 0) {
+                    game.destroyRobot(this);
+                }
+
+                return true;
+            }
+
+            // hit the primary ship :(
+            this.collisionWithPrimary = function (game) {
+                if (this.show && !game.keyAccessor.invincibleMode) {
+                    this.show = false;
+                    game.hitByPanic();
+                }
+            }
+
+            this.addPanic = function(panic) {
+                this.panicsToShoot.push(panic);
+            }
+
+            this.shotHitPrimary = function (game) {
+                game.hitByPanic();
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // RESOURCE ACCESS
+        ///////////////////////////////////////////////////////////////////////////
+
+        function LevelStore() {
+
+            this.currentLevel = 0;
+
+            this.level = function() {
+
+                if (this.currentLevel > 0)
+                    return this.currentLevel;
+                else {
+                    this.GetLevelFromUrl();
+
+                    if (this.currentLevel > 0)
+                        return this.currentLevel;
+
+                    // try local storage
+					
+					if (!$.browser.msie) {
+						var str = localStorage.getItem("level");
+						this.currentLevel = parseInt(str);
+					}
+                    if (this.currentLevel == null || this.currentLevel == undefined)
+                        this.currentLevel = 1;
+                }
+
+                if (this.currentLevel <= 0 || isNaN(this.currentLevel))
+                    this.currentLevel = 1;
+                return this.currentLevel;                
+            }
+
+            this.increment = function() {
+                if (this.currentLevel <= 0)
+                    this.currentLevel = 2;
+                else
+                    this.currentLevel++;
+
+				if (!$.browser.msie)
+					localStorage.setItem("level", this.currentLevel);
+
+                location.href = "#" + this.currentLevel;
+            }
+
+            this.GetLevelFromUrl = function() {
+                var url = location.href;
+                var loc = url.indexOf("#");
+                if (loc > 0) {
+                    var splits = url.split('#');
+                    if (splits.length > 1) {
+                        this.currentLevel = parseInt(splits[1]);
+                    }
+                }
+            }
+
+        }
+
+        function CanvasAccessor(canvasId) {
+
+            this.ctx = document.getElementById(canvasId).getContext('2d');
+            this.canvasId = canvasId;
+            this.height = 0;
+            this.width = 0;
+            this.halfWidth = 0;
+            this.halfHeight = 0;
+            this.imageReducer = 1.0;
+            this.reduceImage = false;
+
+            this.setReducer = function(sizeReducer) {
+                this.imageReducer = sizeReducer;
+                this.reduceImage = true;
+            }
+
+            this.sizeToWindow = function (sizeReducer) {
+                this.height = document.getElementById(canvasId).clientHeight / sizeReducer;
+                this.width = document.getElementById(canvasId).clientWidth / sizeReducer;
+                this.halfWidth = (this.width / 2);
+                this.halfHeight = (this.height / 2);
+                log("height = " + this.height);
+            }
+
+            this.clear = function () {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+            }
+
+            this.translate = function (x, y) {
+                this.ctx.save();
+                this.ctx.translate(x, y);
+            }
+
+            this.rotate = function (rotation) {
+                this.ctx.rotate(rotation * Math.PI / 180);
+            }
+
+            this.save = function () {
+                this.ctx.save();
+            }
+
+            this.restore = function () {
+                this.ctx.restore();
+            }
+
+            this.drawRect = function (x, y, width, height, color) {
+                this.ctx.fillStyle = color;
+                this.ctx.fillRect(x, y, width, height);
+            }
+
+            this.drawImage = function (img, x, y, width, height, rotation) {
+
+                if (this.reduceImage) {
+                    width = width / this.imageReducer;
+                    height = height / this.imageReducer;
+                }
+
+                this.ctx.save();
+                this.ctx.translate(x, y);
+                this.ctx.rotate(rotation * Math.PI / 180);
+                var im = this.getImage(img);
+                try
+                {
+                    this.ctx.drawImage(im, -width / 2, -height / 2, width, height);
+                }catch (e)
+                {
+                    //alert(img + " " + e);
+                }
+                this.ctx.restore();
+            }
+
+            this.getImage = function(img) {
+                var r = document.getElementById(img);
+                if (r == null || r == undefined)
+                    alert(img);
+                return r;
+            }                        
+        }
+
+        function ObjectStore() {
+
+            this.clear = function () {
+                this.dynamicObjects = new Array();
+                this.backgroundObjects = new Array();
+            }
+
+            this.addDynamicObject = function (object) {
+                this.dynamicObjects.push(object);
+            }
+
+            this.removeDynamicObject = function (item) {
+                for (var i = 0; i < this.dynamicObjects.length; i++) {
+                    if (this.dynamicObjects[i] == item) {
+                        this.dynamicObjects.splice(i, 1);
+                    }
+                }
+            }
+
+            this.clear();
+        }
+
+        function MenuAccessor() {
+
+            this.setup = function (game) {
+
+                $("#displayTitle").dialog({ dialogClass: 'transparent', resizable: false, position: ['left', 'top'], width: 500, show: 'fade', hide: 'fade' });
+                $("#dataDisplay").dialog({ dialogClass: 'transparent', resizable: false, position: ['right', 'top'], show: 'fade', hide: 'fade' });
+                $("#gamelose").dialog({ autoOpen: false, width: 500, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade' });
+                $("#gamewin").dialog({ autoOpen: false, width: 500, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade' });
+                $("#welcome").dialog({ autoOpen: true, width: 500, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade' });
+                $("#pause").dialog({ autoOpen: false, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade' });
+                $("#debugdialog").dialog({ autoOpen: false, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade', position: ['left'] });
+                $("#boostdialog").dialog({ height: 50, autoOpen: false, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade', position: ['left', 'bottom'] });
+                $("#firedialog").dialog({ height: 50, autoOpen: false, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade', position: ['right', 'bottom'] });
+
+                $("#nocanvas").dialog({ autoOpen: false, width: 500, dialogClass: 'transparent', resizable: false, show: 'fade', hide: 'fade' });
+
+                if (game.isIpad) {
+                    $("#boostdialog").dialog("open");
+                    $("#firedialog").dialog("open");
+                }
+
+                if (!supports_canvas()) {
+                    this.hideWelcome();
+                    this.showNoCanvas();
+                }
+
+            }
+
+            this.showDebug = function(game) {
+                $("#debugdialog").dialog("open");           
+            }
+
+            this.updateMotion = function (game, ax, ay) {
+                if (game.isIpad) {
+                    $("#ax").html(ax.toString());
+                    $("#ay").html(ay.toString());
+                }
+                $("#sw").html(game.canvasAccessor.width);
+                $("#sh").html(game.canvasAccessor.height);
+            }
+
+            this.updateProgress = function (progress) {
+                $("#progressImg").width(progress);
+            }
+
+            this.hideProgress = function() {
+                $("#progressDivContainer").hide();
+            }
+
+            this.showProgress = function() {
+                $("#progressDivContainer").show();
+            }
+
+            this.hideCountDown = function() {
+                $("#countdownDiv").hide();
+            }
+
+            this.showCountDown = function() {
+                $("#countdownDiv").show();
+            }
+
+            this.countDown = function(val) {
+                $("#countdownVal").html(val);
+            }
+
+            this.updateEnergy = function (energy) {
+                $("#energyImg").width(energy);
+            }
+
+            this.setLevel = function(level) {
+                $("#levelDiv").html(level);    
+            }
+
+            this.hideWelcome = function () {
+                $("#welcome").dialog("close");
+            }
+
+            this.hideNoCanvas = function () {
+                $("#nocanvas").dialog("close");
+            }
+
+            this.showNoCanvas = function () {
+                $("#nocanvas").dialog("open");
+            }
+
+            this.showPause = function () {
+                $("#pause").dialog("open");
+            }
+
+            this.hidePause = function () {
+                $("#pause").dialog("close");
+            }
+
+            this.showWin = function (level) {
+                $("#levelNum").html(level);
+                $("#gamewin").dialog("open");
+            }
+
+            this.hideWin = function () {
+                $("#gamewin").dialog("close");
+            }
+
+            this.showLose = function () {
+                $("#gamelose").dialog("open");
+            }
+
+            this.hideLose = function () {
+                $("#gamelose").dialog("close");
+            }
+        }
+
+        // Handle input from keyboard
+        function KeyAccessor() {
+            this.reset = function () {
+                // key tracking
+                this.rightPressed = false;
+                this.leftPressed = false;
+                this.upPressed = false;
+                this.downPressed = false;
+                this.firePressed = false;
+                this.iPadFirePressed = false;
+                this.boostPressed = false;
+                this.ax = 0.0;
+                this.ay = 0.0;
+                this.enterPressed = false;
+                this.pausePressed = false;
+
+                this.graphicsModePressed = false;
+                this.rotateModePressed = false;
+
+                this.debugModePressed = false;
+                this.invincibleMode = false;
+            }
+
+            this.reset();
+        };
+
+        var keyAccessor = new KeyAccessor();
+
+        // handle key down
+        $(document).keydown(function (key) {
+
+            var result = true;
+
+            if (key.keyCode == '37' || key.keyCode == '65') { // 37 for left arrow
+                keyAccessor.leftPressed = true;
+            }
+            else if (key.keyCode == '39' || key.keyCode == '68') { // 39 for right arrow
+                keyAccessor.rightPressed = true;
+            }
+
+            if (key.keyCode == '38' || key.keyCode == '87') { // 38 up arrow
+                keyAccessor.upPressed = true;
+            }
+
+            if (key.keyCode == '32') {
+                result = false;
+            }
+
+            if (key.keyCode == '40') {
+                result = false;
+            }
+
+            if (key.keyCode == '17') {
+                keyAccessor.boostPressed = true;
+            }
+
+            if (key.keyCode == '32') { // 32 space bar
+                keyAccessor.firePressed = true;
+            }
+
+            if (key.keyCode == '13') {
+                keyAccessor.enterPressed = true;
+            }
+
+            if (key.keyCode == '80') {
+                keyAccessor.pausePressed = true;
+            }
+
+            if (key.keyCode == '71') {
+                keyAccessor.graphicsModePressed = true;
+            }
+
+            if (key.keyCode == '82') {
+                keyAccessor.rotateModePressed = true;
+            }
+
+            if (key.keyCode == '68' && key.keyCode == '78') {
+                keyAccessor.debugModePressed = true;
+            }
+
+            if (key.keyCode == '73') {
+                keyAccessor.invincibleMode = true;
+            }
+
+            return false;
+        });
+
+        $('#boostbtn').mousedown(function() {
+            if (keyAccessor.boostPressed)
+                keyAccessor.boostPressed = false;
+            else
+                keyAccessor.boostPressed = true;
+        });
+
+        $('#firebtn').mousedown(function() {
+            keyAccessor.firePressed = true;
+            keyAccessor.enterPressed = true;
+            if (keyAccessor.iPadFirePressed)
+                keyAccessor.iPadFirePressed = false;
+            else
+                keyAccessor.iPadFirePressed = true;
+            log("fire clicked");
+        });
+
+        $('#firebtn').mouseup(function() {
+            keyAccessor.firePressed = false;
+        });
+
+        // handle key up
+        $(document).keyup(function (key) {
+            if (key.keyCode == '37' || key.keyCode == '65') { // 37 for left arrow
+                keyAccessor.leftPressed = false;
+            }
+            else if (key.keyCode == '39' || key.keyCode == '68') { // 39 for right arrow
+                keyAccessor.rightPressed = false;
+            }
+
+            if (key.keyCode == '38' || key.keyCode == '87') { // 38 up arrow
+                keyAccessor.upPressed = false;
+            }
+
+            if (key.keyCode == '17') {
+                keyAccessor.boostPressed = false;
+            }
+
+            if (key.keyCode == '32') { // 32 space bar
+                keyAccessor.firePressed = false;
+            }
+
+            if (key.keyCode == '13') {
+                keyAccessor.enterPressed = false;
+            }
+
+            if (key.keyCode == '80') {
+                keyAccessor.pausePressed = false;
+            }
+
+            if (key.keyCode == '71') {
+                keyAccessor.graphicsModePressed = false;
+            }
+
+            if (key.keyCode == '82') {
+                keyAccessor.rotateModePressed = false;
+            }
+
+            if (key.keyCode == '68') {
+                keyAccessor.debugModePressed = false;
+            }
+
+        });
+
+        // handle ipad
+        if (window.DeviceMotionEvent != undefined) {
+            window.ondevicemotion = function (event) {
+                keyAccessor.ax = event.accelerationIncludingGravity.x;
+                keyAccessor.ay = event.accelerationIncludingGravity.y;
+
+                var ax = keyAccessor.ax;
+                var ay = keyAccessor.ay;
+
+                if (ax < -2) {
+                    keyAccessor.leftPressed = true;
+                }
+                else {
+                    keyAccessor.leftPressed = false;
+                }
+
+                if (ax > 2) {
+                    keyAccessor.rightPressed = true;
+                }
+                else {
+                    keyAccessor.rightPressed = false;
+                }
+
+                if (ay > -7) {
+                    keyAccessor.upPressed = true;
+                }
+                else {
+                    keyAccessor.upPressed = false;
+                }
+            }
+        }
+
+
+        ///////////////////////////////////////////////////////////////////////////
+        // ENGINES
+        ///////////////////////////////////////////////////////////////////////////
+
+        function BeforeGameEngine() {
+
+            this.start = function() {
+                this.stopTime = new Date().getTime() + 10000;
+            }
+
+            this.loop = function (game) {
+
+                if (game.keyAccessor.enterPressed) {
+                    game.keyAccessor.enterPressed = false;
+                    game.startGame();
+                    log("starting game");
+                }
+
+                if (game.thisFrameTime < this.stopTime) {
+
+                    this.updateDynamicObjects(game);
+    
+                    this.updateScreen(game);
+                }
+            }
+
+            this.updateScreen = function (game) {
+
+                // slow things down
+                if (game.currentSpeed > 0) {
+                    game.currentSpeed--;
+                }
+
+                game.currentVector.x = game.currentVector.x * 0.95 * game.frameMult;
+                game.currentVector.y = game.currentVector.y * 0.95 * game.frameMult;
+
+                radians = Math.PI * game.shipRotation / 180;
+
+                var v = game.currentVector;
+
+                game.currentPosition.x += v.x;
+                game.currentPosition.y += v.y;
+
+                // don't go past borders
+                if (game.currentPosition.x < 0) {
+                    game.currentPosition.x = 0;
+                    v.x = 0;
+                }
+                if (game.currentPosition.y < 0) {
+                    game.currentPosition.y = 0;
+                    v.y = 0;
+                }
+                if (game.currentPosition.x > game.gameMaxWidth) {
+                    game.currentPosition.x = game.gameMaxWidth;
+                    v.x = 0;
+                }
+                if (game.currentPosition.y > game.gameMaxHeight) {
+                    game.currentPosition.y = game.gameMaxHeight;
+                    v.y = 0;
+                }
+                game.windowTopLeft.x += v.x;
+                game.windowTopLeft.y += v.y;
+
+                game.windowBottomRight.x += v.x;
+                game.windowBottomRight.y += v.y;
+            }
+
+            this.updateDynamicObjects = function (game) {
+                for (var i = 0; i < game.objectStore.dynamicObjects.length; i++) {
+                    var item = game.objectStore.dynamicObjects[i];
+                    item.update(game);
+                }
+            }
+
+            this.start();
+        }
+
+        function GamePlayEngine() {
+
+            this.shotDelay = 250;
+            this.lastShot = new Date().getTime();
+
+            this.deathByShot = 0;
+            this.deathByEnergy = 1;
+
+            this.reset = function (game) {
+                this.progress = 0;
+                this.starCount = 100;
+                this.gunMode = 1;
+                this.resetEnergy();
+                this.isRunning = true;
+                game.shipRotation = 0;
+                this.lastRotation = 0;
+                game.currentVector = new Point(0, 0);
+                game.currentSpeed = 0;
+                this.difficult = 1;
+                this.panicCount = 100;
+                this.supercount = 0;
+                game.currentPosition.x = game.startX;
+                game.currentPosition.y = game.startY;
+                this.robotCount = 0;
+                this.panicCache = new Array();
+                this.nextRobot = 0;
+                this.robots = new Array();
+
+                game.menuAccessor.setLevel(game.levelStore.level());
+
+                if ((game.levelStore.level() / 10) > 1) {
+                    // changes speed
+                    this.difficulty = (game.levelStore.level() / 10) * 1.1;
+
+                    // adjust number of super panics
+                    this.superCount = parseInt((game.levelStore.level() / 10).toString()) * 10 + 10;
+                }
+                else {
+                    this.superCount = 10;
+                }
+
+                this.mode = 0;
+                this.stopTime = -1
+
+                if (game.levelStore.level() % 10 == 0) {
+                    this.mode = 1; // panic mode
+                    this.stopTime = new Date().getTime() + 60 * 1000 * (game.levelStore.level() / 10);
+                    game.menuAccessor.showCountDown();
+                    game.menuAccessor.hideProgress();
+                    this.updateCountDown(game);
+                }
+                else {
+                    this.mode = 0;
+                    game.menuAccessor.hideCountDown();
+                    game.menuAccessor.showProgress();
+                }
+
+                if (this.difficulty > 3.5)
+                    this.difficulty = 3.5;
+
+                this.panicCount += this.superCount;
+
+                game.objectStore.clear();
+
+                this.setupWindowLocations(game);
+                this.createStars(game);
+                this.createGunUpgrades(game);
+                this.createEnergyStations(game);
+                this.createPanics(game);
+                this.createRobots(game);
+            }
+
+            this.updateCountDown = function(game) {
+                this.diff = (this.stopTime - game.thisFrameTime) / 1000;
+                game.menuAccessor.countDown(parseInt(this.diff.toString()));
+
+                if (this.diff <= 0) {
+                    game.winGame();
+                }
+            }
+
+            this.setupWindowLocations = function (game) {
+                // setup window locs
+                game.windowTopLeft = new Point(
+                game.currentPosition.x - game.canvasAccessor.halfWidth,
+                game.currentPosition.y - game.canvasAccessor.halfHeight);
+                game.windowBottomRight = new Point(
+                game.currentPosition.x + game.canvasAccessor.halfWidth,
+                game.currentPosition.y + game.canvasAccessor.halfHeight);
+            }
+
+            this.createStars = function (game) {
+
+                game.objectStore.backgroundObjects = new Array();
+
+                for (var i = 0; i < 100 / game.sizeReducer; i++) {
+
+                    game.objectStore.backgroundObjects.push(
+                    new Star(
+                        Math.random() * game.canvasAccessor.width + game.currentPosition.x - game.canvasAccessor.halfWidth,
+                        Math.random() * game.canvasAccessor.height + game.currentPosition.y - game.canvasAccessor.halfHeight));
+                }
+            }
+
+            this.createGunUpgrades = function (game) {
+                for (var i = 0; i < 10; i++) {
+
+                    game.objectStore.dynamicObjects.push(
+                    new GunUpgrade(
+                        Math.random() * game.gameMaxWidth,
+                        Math.random() * game.gameMaxHeight));
+                }
+            }
+
+            this.createEnergyStations = function (game) {
+                for (var i = 0; i < 10; i++) {
+
+                    game.objectStore.dynamicObjects.push(
+                    new SpaceStation(
+                        Math.random() * game.gameMaxWidth,
+                        Math.random() * game.gameMaxHeight));
+                }
+            }
+
+            this.createPanics = function (game) {
+
+                levelMode = game.levelStore.level() % 10;
+
+                var normal = 90;
+                var targeted = 5;
+                var wiggle = 5;
+                var battleship = 0;
+
+                switch (levelMode) {
+                    case 2:
+                        targeted = 5;
+                        wiggle = 15;
+                        battleship = 5;
+                        break;
+                    case 3:
+                        targeted = 5;
+                        wiggle = 15;
+                        battleship = 5;
+                        break;
+                    case 4:
+                        targeted = 10;
+                        wiggle = 15;
+                        battleship = 5;
+                        break;
+                    case 5:
+                        targeted = 10;
+                        wiggle = 20;
+                        battleship = 5;
+                        break;
+                    case 6:
+                        targeted = 15;
+                        wiggle = 30;
+                        battleship = 20;
+                        break;
+                    case 7:
+                        targeted = 15;
+                        wiggle = 50;
+                        battleship = 5;
+                        break;
+                    case 8:
+                        targeted = 20;
+                        wiggle = 5;
+                        battleship = 50;
+                        break;
+                    case 9:
+                        targeted = 25;
+                        wiggle = 25;
+                        battleship = 20;
+                        break;
+                    case 0:
+                        targeted = 40;
+                        wiggle = 20;
+                        battleship = 20;
+                        break;
+                }
+
+                var normal = this.panicCount - targeted - wiggle - battleship;
+
+                for (var i = 0; i < this.panicCount; i++) {
+
+                    while (true) {
+
+                        point = new Point(Math.random() * game.gameMaxWidth, Math.random() * game.gameMaxHeight);
+
+                        if (Math.abs(point.x - game.currentPosition.x) > 400 &&
+                            Math.abs(point.y - game.currentPosition.y) > 400) {
+                            break;
+                        }
+                    }
+                    var speedMult = 1;
+                    if (i < 5) {
+                        speedMult = 2;
+                    }
+                    else if (i < 10) {
+                        speedMult = 1.5;
+                    }
+
+                    speedMult = speedMult * game.speedAdjust;
+
+                    if (targeted > 0) {
+                        this.panicCache.push(
+                            new TargetedPanic(point.x, point.y, speedMult));
+                        targeted--;
+                    }
+                    else if (wiggle > 0) {
+                        this.panicCache.push(
+                            new WigglePanic(point.x, point.y, speedMult));
+                        wiggle--;
+                    }
+                    else if (battleship > 0) {
+                        this.panicCache.push(
+                            new BattleshipPanic(point.x, point.y, speedMult));
+                        battleship--;
+                    }
+                    else if (this.superCount > 0) {
+                        this.panicCache.push(
+                            new SuperPanic(point.x, point.y, speedMult));
+                        this.superCount--;
+                    }
+                    else {
+                        this.panicCache.push(
+                            new Panic(point.x, point.y, speedMult));
+                        normal--;
+                    }
+                }
+
+                this.panicsInGame = 0;
+                for(var j = 0; j < game.maxPanicCount; j++) {
+
+                    var pos = 0;
+
+                    if (this.panicCache.length > 0){
+
+                        if (this.panicCache.length > 1)
+                            var pos = Math.floor(Math.random() * this.panicCache.length);
+
+                        var item = this.panicCache[pos];
+                        this.panicCache.splice(pos, 1);
+                        game.objectStore.dynamicObjects.push(item);
+                        this.panicsInGame++;
+                    }
+                }
+
+                log("panics left: " + this.panicCache.length);
+            }
+
+            this.createRobots = function(game) {
+                var inside = 1000;
+                var robotSpeed = 2;
+
+                var shots = 1;
+
+                if (game.levelStore.level() > 10) {
+                    shots = 3;
+                }
+                if (game.levelStore.level() > 20) {
+                    shots = 5;
+                }
+
+                this.robots.push(
+                        new RobotPanic(inside+1, inside+1, robotSpeed, game.gameMaxWidth, game.gameMaxHeight,
+                                inside, shots, 0));
+
+                this.robots.push(
+                        new RobotPanic(game.gameMaxWidth - inside-1, inside+1, robotSpeed, game.gameMaxWidth, game.gameMaxHeight,
+                                inside, shots, 1));
+
+                this.robots.push(
+                        new RobotPanic(game.gameMaxWidth - inside-1, game.gameMaxHeight - inside-1, robotSpeed, game.gameMaxWidth, game.gameMaxHeight,
+                                inside, shots, 2));
+
+                this.robots.push(
+                        new RobotPanic(inside+1, game.gameMaxHeight - inside-1, robotSpeed, game.gameMaxWidth, game.gameMaxHeight,
+                                inside, shots, 3));
+
+                for(var i = 0; i < this.robots.length; i++) {
+                    var item = this.robots[i];
+                    game.objectStore.dynamicObjects.push(item);
+                }
+
+                this.robotCount = 4; // 4 robots
+            }
+
+            this.loop = function (game) {                               
+
+                this.updatePrimary(game);
+
+                this.fireMissiles(game);
+
+                this.updateDynamicObjects(game);
+
+                game.menuAccessor.updateProgress((this.progress / this.panicCount) * 100);
+
+                game.menuAccessor.updateEnergy(this.energy);
+                if (this.energy <= 0)
+                    this.loseGame(game, this.deathByEnergy);
+
+                if (this.mode == 1) {
+                    this.updateCountDown(game);
+                }
+            }
+
+            this.updateDynamicObjects = function (game) {
+                for (var i = 0; i < game.objectStore.dynamicObjects.length; i++) {
+                    var item = game.objectStore.dynamicObjects[i];
+                    item.update(game);
+
+                    if (item.point && item.collisionWithPrimary) {
+
+                        if (isClose(item.point, game.currentPosition) && isWithinRadius(item.point, game.currentPosition, 30)) {
+                            item.collisionWithPrimary(game);
+                        }
+                    }
+
+                    if (item.checkCollision) {
+                        this.checkForCollision(game, item);
+                    }
+                }
+            }
+
+            this.checkForCollision = function (game, item) {
+
+                var collisionRadius = 20;
+
+                if (game.sizeReducer == 2)
+                    collisionRadius = collisionRadius / game.sizeReducer;
+
+                if (item.checkCollision) {
+
+                    for (var subIndex = 0; subIndex < game.objectStore.dynamicObjects.length; subIndex++) {
+
+                        var other = game.objectStore.dynamicObjects[subIndex];
+
+                        if (item != other && item.point != undefined && other.point != undefined &&
+                            item.lastPosition != undefined && other.lastPosition != undefined) {
+
+                            if (item instanceof Missile && other instanceof Missile)
+                                continue; // skip to next item in loop
+
+                            if (isClose(item.point, other.point)) {
+
+                                var itemDistance = calculateDistance(item.lastPosition, item.point);
+                                var otherDistance = calculateDistance(other.lastPosition, other.point);
+
+                                var collision = false;
+
+                                if (itemDistance < 10 && otherDistance < 10) {
+                                    if (isWithinRadius(item.point, other.point, collisionRadius)) {
+                                        collision = true;
+                                    }
+                                } else {
+                                    // We need to d a lot of compares. For now we will standarize on 5 compares for now..
+                                    var compares = 5;
+
+                                    var itemVector = getVector(item.lastPosition, item.point, 5);
+                                    var otherVector = getVector(other.lastPosition, other.point, 5);
+
+                                    var itemTmp = new Point(item.lastPosition.x, item.lastPosition.y);
+                                    var otherTmp = new Point(other.lastPosition.x, other.lastPosition.y);
+
+                                    for (var iter = 1; iter < compares; iter++) {
+
+                                        itemTmp.x += itemVector.x;
+                                        itemTmp.y += itemVector.y;
+
+                                        otherTmp.x += otherVector.x;
+                                        otherTmp.y += otherVector.y;
+
+                                        if (isWithinRadius(itemTmp, otherTmp, collisionRadius)) {
+                                            collision = true;
+                                            break; // no more
+                                        }
+                                    }
+                                }
+                                if (collision) {
+                                    if (item.collision)
+                                        item.collision(game, other);
+                                    if (other.collision)
+                                        other.collision(game, item);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            this.fireMissiles = function (game) {
+                if (this.isRunning &&
+                        (game.keyAccessor.firePressed || game.keyAccessor.iPadFirePressed) &&
+                        game.thisFrameTime > (this.lastShot + this.shotDelay)) {
+                    
+                    this.energy = this.energy - 0.15;
+
+                    game.objectStore.addDynamicObject(
+                    new Missile(
+                        game.currentPosition.x,
+                        game.currentPosition.y,
+                        game.shipRotation));
+
+                    if (this.gunMode > 1) {
+                        game.objectStore.addDynamicObject(
+                        new Missile(
+                            game.currentPosition.x,
+                            game.currentPosition.y,
+                            game.shipRotation - 5));
+                        game.objectStore.addDynamicObject(
+                        new Missile(
+                            game.currentPosition.x,
+                            game.currentPosition.y,
+                            game.shipRotation + 5));
+                    }
+
+                    if (this.gunMode > 2) {
+                        game.objectStore.addDynamicObject(
+                        new Missile(
+                            game.currentPosition.x,
+                            game.currentPosition.y,
+                            game.shipRotation + 180));
+                    }
+
+                    this.lastShot = game.thisFrameTime;
+                }
+            }
+
+            this.updatePrimary = function (game) {
+
+                // slow things down
+                if (game.currentSpeed > 0) {
+                    game.currentSpeed--;
+                }
+
+                game.currentVector.x = game.currentVector.x * 0.98 * game.frameMult;
+                game.currentVector.y = game.currentVector.y * 0.98 * game.frameMult;
+
+                if (this.isRunning) {
+                    // process updates to ship location
+                    if (game.keyAccessor.leftPressed) {
+
+                        if (this.lastRotation >= 0)
+                            this.lastRotation = -2.5;
+                        else
+                        {
+                            this.lastRotation += -2.5; 
+                        }
+
+                        if (this.lastRotation < 10)
+                            this.lastRotation = -10;
+
+                        game.shipRotation += this.lastRotation;
+                    }
+                    else if (game.keyAccessor.rightPressed) {
+
+                        if (this.lastRotation <= 0)
+                            this.lastRotation = 2.5;
+                        else
+                        {
+                            this.lastRotation += 2.5;
+                        }
+
+                        if (this.lastRotation > 10)
+                            this.lastRotation = 10;
+
+                        game.shipRotation += this.lastRotation;
+                    }
+
+                    if (game.keyAccessor.boostPressed) {
+                        game.currentSpeed += 8;
+                        this.energy = this.energy - 1.0;
+						
+					    if (game.currentSpeed > 20) {
+							game.currentSpeed = 20;
+						}
+                    }
+                    else if (game.keyAccessor.upPressed) {
+                        game.currentSpeed += 4;
+                        this.energy = this.energy - 0.05;
+						
+					    if (game.currentSpeed > 8) {
+							game.currentSpeed = 8;
+						}
+                    }
+					else
+						game.currentSpeed = 0;
+                }
+
+
+                radians = Math.PI * game.shipRotation / 180;
+
+                xDir = Math.sin(radians);
+                yDir = Math.cos(radians);
+
+                if (game.sizeReducer == 2) {
+                    game.currentVector.x += xDir * game.currentSpeed * .15 * game.frameMult * 0.2;
+                    game.currentVector.y -= yDir * game.currentSpeed * .15 * game.frameMult * 0.2;
+                }
+                else {
+                    game.currentVector.x += xDir * game.currentSpeed * .15 * game.frameMult;
+                    game.currentVector.y -= yDir * game.currentSpeed * .15 * game.frameMult;
+                }
+
+                var v = game.currentVector;
+
+                game.currentPosition.x += v.x;
+                game.currentPosition.y += v.y;
+
+                // don't go past borders
+                if (game.currentPosition.x < 0) {
+                    game.currentPosition.x = 0;
+                    v.x = 0;
+                }
+                if (game.currentPosition.y < 0) {
+                    game.currentPosition.y = 0;
+                    v.y = 0;
+                }
+                if (game.currentPosition.x > game.gameMaxWidth) {
+                    game.currentPosition.x = game.gameMaxWidth;
+                    v.x = 0;
+                }
+                if (game.currentPosition.y > game.gameMaxHeight) {
+                    game.currentPosition.y = game.gameMaxHeight;
+                    v.y = 0;
+                }
+                game.windowTopLeft.x += v.x;
+                game.windowTopLeft.y += v.y;
+
+                game.windowBottomRight.x += v.x;
+                game.windowBottomRight.y += v.y;
+            }
+
+            this.upgradeGun = function (game) {
+                this.gunMode++;
+
+                if (this.gunMode > 3)
+                    this.gunMode = 3;
+            }
+
+            this.resetEnergy = function (game) {
+                this.energy = 100.0;
+            }
+
+            this.loseGame = function (game, deathType) {
+                if (deathType == undefined || deathType == this.deathByShot) {
+                    $("#gameloseText").html("You got hit!");
+                }
+                else {
+                    $("#gameloseText").html("You ran out of fuel!");
+                }
+
+                this.stop();
+                $("#gamelose").dialog('open');
+            }
+
+            this.stop = function (game) {
+                this.isRunning = false;
+                game.showPrimary = false;
+            }
+
+            this.start = function (game) {
+                this.isRunning = true;
+                game.showPrimary = true;
+            }
+
+            this.addExplsion = function (game, x, y, color) {
+                game.objectStore.addDynamicObject(new Explosion(x, y, color));
+            }
+
+            this.hitByPanic = function (game) {
+                this.addExplsion(game, game.currentPosition.x, game.currentPosition.y, "red");
+
+                if (!game.keyAccessor.invincibleMode)
+                    this.stop(game);
+            }
+
+            this.destroyPanic = function (game, panic) {
+                this.addExplsion(game, panic.point.x, panic.point.y, panic.color);
+                this.progress++;
+                game.objectStore.removeDynamicObject(panic);
+
+                this.panicsInGame--;
+
+                log("progress = " + this.progress + " panic count = " + this.panicCount + " panics in game = " + this.panicsInGame);
+
+                this.nextRobot++;
+                if (this.panicCache.length > 0 || this.mode == 1) {
+                    if (this.nextRobot >= this.robots.length) {
+                        this.nextRobot = 0;
+                    }
+
+                    var item = this.addPanic(game);
+                    if (item != null) {
+                        this.robots[this.nextRobot].addPanic(item);
+                        this.panicsInGame++;
+                    }
+                }
+
+                if (this.panicsInGame <= 0) {
+                    game.winGame();
+                }
+            }
+
+            this.addPanic = function(game) {
+
+                result = null;
+
+                if (this.panicCache.length > 0 && this.robotCount > 0){
+
+                    if (this.panicCache.length > 1)
+                        var pos = Math.floor(Math.random() * this.panicCache.length);
+
+                    result = this.panicCache[pos];
+                    this.panicCache.splice(pos, 1);                    
+                }
+                else if (this.mode == 1) {
+                    var point = new Point(Math.random() * game.gameMaxWidth, Math.random() * game.gameMaxHeight);
+                    result = new SuperPanic(point.x, point.y, speedMult);
+                }
+
+                return result;
+            }
+
+            this.destroyRobot = function (game, robot) {
+                this.addExplsion(game, robot.point.x, robot.point.y, "green");
+                this.progress++;
+                game.objectStore.removeDynamicObject(robot);
+
+                log("robot destroyed");
+
+                this.robotCount--;
+
+                if (this.robotCount <= 0) {
+                    this.robotCount = 0;
+                }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // MANAGERS
+        ///////////////////////////////////////////////////////////////////////////
+
+        // Manage game state. Handle updates
+        function GameStateManager() {
+
+            // game states
+            this.beforeGame = 1;
+            this.playingGame = 2;
+            this.paused = 3;
+
+            this.gameState = this.beforeGame;
+
+            this.loop = function (game) {
+
+                if (game.keyAccessor.pausePressed) {
+
+                    if (this.gameState == this.paused) {
+                        this.gameState = this.playingGame;
+                        game.menuAccessor.hidePause();
+                    }
+                    else {
+                        this.gameState = this.paused;
+                        game.menuAccessor.showPause();
+                    }
+
+                    keyAccessor.pausePressed = false; // prevent repeat
+                }
+
+                if (game.keyAccessor.debugModePressed) {
+                    if (!game.debugMode)
+                        game.menuAccessor.showDebug(game);
+                    game.debugMode = true                    
+                }
+
+                if (this.gameState == this.beforeGame) {
+                    game.beforeGameEngine.loop(game);
+                }
+                else if (this.gameState == this.playingGame) {
+                    game.gamePlayEngine.loop(game);
+                }
+
+                game.menuAccessor.updateMotion(game, game.keyAccessor.ax, game.keyAccessor.ay);
+            }
+
+            this.resetWorld = function (game) {
+
+                game.objectStore.clear();
+                game.gamePlayEngine.reset(game);                
+            }
+
+            this.upgradeGun = function (game) {
+                game.gamePlayEngine.upgradeGun(game);
+            }
+
+            this.resetEnergy = function (game) {
+                game.gamePlayEngine.resetEnergy(game);
+            }
+
+            this.startGame = function (game) {
+                this.gameState = this.playingGame;
+                game.menuAccessor.hideWelcome();
+                game.menuAccessor.hidePause();
+                game.menuAccessor.hideWin();
+                game.menuAccessor.hideLose();
+                game.gamePlayEngine.reset(game);
+                game.gamePlayEngine.start(game);
+            }
+
+            this.addExplsion = function (game, x, y, color) {
+                game.gamePlayEngine.addExplosion(x, y, color);
+            }
+
+            this.hitByPanic = function (game) {
+                game.gamePlayEngine.hitByPanic(game);
+
+                if (!game.keyAccessor.invincibleMode)
+                    this.loseGame(game);
+            }
+
+            this.destroyPanic = function (game, panic) {
+                game.gamePlayEngine.destroyPanic(game, panic);
+            }
+
+            this.destroyRobot = function (game, robot) {
+                game.gamePlayEngine.destroyRobot(game, robot);
+            }
+
+            this.winGame = function (game) {
+                if (this.gameState == this.playingGame) {
+                    this.gameState = this.beforeGame;
+                    game.beforeGameEngine.start();
+                    game.menuAccessor.showWin(game.levelStore.level());
+                    game.levelStore.increment();
+                }
+            }
+
+            this.loseGame = function (game) {
+                this.gameState = this.beforeGame;
+                game.beforeGameEngine.start();
+                game.menuAccessor.showLose();
+            }
+        }
+
+        function GameDrawManager() {
+
+            this.lastFrame = 0;
+            this.rotateWorld = false;
+
+            this.draw = function (game) {
+
+                if (game.keyAccessor.graphicsModePressed) {
+                    if (game.sizeReducer == 1) {
+                        game.sizeReducer = 2;
+                        this.resize(game);
+                    }
+                }
+
+                if (game.sizeReducer == 2) {
+                    game.canvasAccessor.setReducer(game.sizeReducer);
+                }
+
+                game.canvasAccessor.clear();
+                game.canvasAccessor.save();
+
+                game.canvasAccessor.translate(
+                -game.currentPosition.x + game.canvasAccessor.halfWidth,
+                -game.currentPosition.y + game.canvasAccessor.halfHeight);
+
+                this.drawBackgroundObjects(game);
+
+                this.drawDynamicObjects(game);
+                
+                // draw primary
+                this.drawPrimary(game);
+
+
+                game.canvasAccessor.restore();
+
+            }
+
+            this.drawBackgroundObjects = function (game) {
+                for (var i = 0; i < game.objectStore.backgroundObjects.length; i++) {
+                    var obj = game.objectStore.backgroundObjects[i];
+                    obj.draw(game);
+                }
+            }
+
+            this.drawDynamicObjects = function (game) {
+                for (var i = 0; i < game.objectStore.dynamicObjects.length; i++) {
+                    var obj = game.objectStore.dynamicObjects[i];
+                    obj.draw(game);
+                }
+            }
+
+            this.drawPrimary = function (game) {
+
+                if (game.showPrimary) {
+                    var primarySize = 50;
+                    img = this.primaryImage(game);
+                    game.canvasAccessor.drawImage(img,
+                        game.currentPosition.x,
+                        game.currentPosition.y,
+                        primarySize,
+                        primarySize,
+                        game.shipRotation);
+                }
+            }
+
+            this.primaryImage = function (game) {
+
+                var img = "spaceshipflyingstill";
+
+                if (game.gamePlayEngine.isRunning) {
+                    if (game.keyAccessor.upPressed) {
+                        if (this.lastFrame == 0) {
+                            img = "spaceshipflying1";
+                            this.lastFrame = 1;
+                        }
+                        else {
+                            img = "spaceshipflying2";
+                            this.lastFrame = 0;
+                        }
+                    }
+                    else if (game.keyAccessor.boostPressed) {
+                        if (this.lastFrame == 0) {
+                            img = "spaceshipboosting1";
+                            this.lastFrame = 1;
+                        }
+                        else {
+                            img = "spaceshipboosting2";
+                            this.lastFrame = 0;
+                        }
+                    }
+                }
+
+                return img;
+            }
+
+            this.size = function (game) {
+                var c = document.getElementById(game.canvasId);
+                c.width = document.getElementById(game.canvasId).clientWidth / game.sizeReducer;
+                c.height = document.getElementById(game.canvasId).clientHeight / game.sizeReducer;
+				
+				if ($.browser.msie) {
+					var fullheight = document.body.clientHeight;
+					$("#" + game.canvasId).height(fullheight);
+					//c.height = fullheight;
+				}
+				
+                game.canvasAccessor.sizeToWindow(game.sizeReducer);
+            }
+
+            this.resize = function (game) {
+                this.size(game);
+                game.gamePlayEngine.setupWindowLocations(game);
+                game.gamePlayEngine.createStars(game);
+            }
+
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // GAME
+        ///////////////////////////////////////////////////////////////////////////
+        function SpaceGame(canvasId) {
+
+            // important variables
+            var me = this;
+            this.canvasId = canvasId;
+            this.startX = 2500;
+            this.startY = 2500;
+            this.currentPosition = new Point(this.startX, this.startY);
+            this.currentVector = new Point(0, 0);
+            this.currentSpeed = 0;
+            this.gameMaxWidth = 5000;
+            this.gameMaxHeight = 5000;
+            this.windowTopLeft = new Point(0, 0);
+            this.windowBottomRight = new Point(0, 0);
+            this.thisFrameTime = new Date().getTime();
+            this.lastFrameTime = new Date().getTime();
+            this.intervalStandard = 50; // 50ms
+            this.shipRotation = 0;
+            this.frameMult = 1;
+            this.framesPerSecond = 20;
+            this.showPrimary = false;
+            this.maxPanicCount = 100;
+            this.debugMode = false;
+            this.speedAdjust = 1.0;
+
+            this.isIpad = false;
+            this.sizeReducer = 1;
+
+            if (this.isIpad) {
+                this.sizeReducer = 2;
+                this.speedAdjust = 0.2;
+
+                this.gameMaxWidth = 2500;
+                this.gameMaxHeight = 2500;
+
+                this.startX = 1250;
+                this.startY = 1250;                
+
+                $("#" + canvasId).height(1024);
+                $("#" + canvasId).width(768);
+            }
+
+            // managers
+            this.gameStateManager = new GameStateManager();
+            this.drawManager = new GameDrawManager();
+            this.keyAccessor = keyAccessor; // global that gets updated by events
+
+            // engines
+            this.gamePlayEngine = new GamePlayEngine();
+            this.beforeGameEngine = new BeforeGameEngine();
+
+            // resource accessors
+            this.objectStore = new ObjectStore();
+            this.canvasAccessor = new CanvasAccessor(canvasId);
+            this.menuAccessor = new MenuAccessor();
+            this.levelStore = new LevelStore();
+            
+            // global functions
+            this.reset = function () {
+                this.keyAccessor.reset(this);
+                this.drawManager.size(this);
+                this.gameStateManager.resetWorld(this);
+                this.menuAccessor.setup(this);
+            }
+
+            // runs at a set interval
+            this.loop = function () {
+                this.lastFrameTime = this.thisFrameTime;
+                this.thisFrameTime = new Date().getTime();
+
+                var tslf = this.timeBetweenFrames() / 1000;
+                this.frameMult = this.framesPerSecond * tslf;
+
+                if (this.frameMult > 1)
+                    this.frameMult = 1;
+
+                this.gameStateManager.loop(this);
+                this.drawManager.draw(this);
+            }
+
+            this.timeBetweenFrames = function () {
+                return this.thisFrameTime - this.lastFrameTime;
+            }
+
+            // ** game events (things that come back around) **
+            this.upgradeGun = function () {
+                setTimeout("game.gameStateManager.upgradeGun(game)", 10);
+            }
+
+            this.resetEnergy = function () {
+                setTimeout("game.gameStateManager.resetEnergy(game)", 10);
+            }
+
+            this.resize = function () {
+                if (!this.isIpad)
+                    setTimeout("game.drawManager.resize(game)", 10);
+            }
+
+            this.startGame = function () {
+                setTimeout("game.gameStateManager.startGame(game)", 10);
+            }
+
+            this.addExplosion = function (x, y, color) {
+                setTimeout(
+                        function() {game.gameStateManager.addExplosion(game, x, y, color)}, 1);
+            }
+
+            this.hitByPanic = function () {
+                setTimeout("game.gameStateManager.hitByPanic(game)", 10);
+            }
+
+            this.destroyPanic = function (panic) {
+                setTimeout(
+                        function() {game.gameStateManager.destroyPanic(game, panic)}, 1);
+            }
+
+            this.winGame = function () {
+                setTimeout("game.gameStateManager.winGame(game)", 10);
+            }
+
+            this.loseGame = function () {
+                setTimeout("game.gameStateManager.loseGame(game)", 10);
+            }
+
+            this.destroyRobot = function(robot) {
+                setTimeout(function() {game.gameStateManager.destroyRobot(game, robot) }, 10);
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // GAME SETUP
+        ///////////////////////////////////////////////////////////////////////////
+
+        var game = new SpaceGame("canvas");
+        var interval = (1 / game.framesPerSecond) * 1000;
+
+        function loop() {
+            game.loop();
+        }
+
+        $(document).ready(function () {
+            // init of game
+            game.reset();
+
+            setInterval("loop()", interval);
+        });
+
+        $(window).resize(function () {
+            game.resize();
+        });
+
+    </script>
+</body>
+</html>
